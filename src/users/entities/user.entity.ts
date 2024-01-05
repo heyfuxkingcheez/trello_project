@@ -1,3 +1,4 @@
+// src/users/entities/user.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -18,6 +19,12 @@ export class User {
 
   @Column({ length: 255 })
   password: string;
+
+  @Column({ type: 'text', nullable: true, name: 'image_url' })
+  imageUrl: string;
+
+  @Column({ type: 'text', nullable: true })
+  comment: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

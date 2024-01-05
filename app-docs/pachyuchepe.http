@@ -1,0 +1,37 @@
+@domain = http://localhost:3000
+
+@AccessToken = {{loginToken.response.body.$.access_token}}
+
+### 
+# 사용자 회원가입
+POST {{domain}}/user
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "password": "123qweQWE!",
+  "username": "일반좁밥"
+}
+
+###
+# 사용자 로그인
+# @name loginToken
+POST {{domain}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "password": "123qweQWE!"
+}
+
+###
+# 사용자 정보 조회
+GET {{domain}}/user/profile
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+
+### 
+# 엑세스 토큰 재발급 (로그인 시간 연장)
+# @name loginToken
+POST {{domain}}/auth/refresh
+Authorization: Bearer {{AccessToken}}
