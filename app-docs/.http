@@ -1,0 +1,3 @@
+@domain = http://localhost:3000
+
+@AccessToken = {{loginToken.response.body.$.access_token}}
