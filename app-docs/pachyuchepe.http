@@ -1,5 +1,4 @@
 @domain = http://localhost:3000
-
 @AccessToken = {{loginToken.response.body.$.access_token}}
 
 ### 
@@ -30,8 +29,43 @@ GET {{domain}}/user/profile
 Authorization: Bearer {{AccessToken}}
 Content-Type: application/json
 
-### 
+###
 # 엑세스 토큰 재발급 (로그인 시간 연장)
 # @name loginToken
 POST {{domain}}/auth/refresh
+Authorization: Bearer {{AccessToken}}
+
+###
+# 사용자 정보 업데이트 - imageFile
+PATCH {{domain}}/user
+Authorization: Bearer {{AccessToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="currentPassword"
+
+123qweQWE!
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="newPassword"
+
+123qweQWE!
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="username"
+
+감자국 명예신민
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="comment"
+
+코멘트다 짜샤!
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="image.png"
+Content-Type: image/png
+
+< ./image.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 
+# 사용자 삭제
+DELETE {{domain}}/user
+Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
