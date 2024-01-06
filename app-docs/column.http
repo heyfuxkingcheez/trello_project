@@ -1,0 +1,50 @@
+@domain = http://localhost:3000
+@AccessToken = {{loginToken.response.body.$.access_token}}
+
+
+###
+# 사용자 로그인
+# @name loginToken
+POST {{domain}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "password": "123qweQWE!"
+}
+
+###
+# 컬럼 생성
+POST {{domain}}/board/1/column
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+    "name": "Done5"
+}
+
+###
+# 컬럼 목록 조회
+GET {{domain}}/board/1/column
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+
+###
+# 컬럼 이름 수정
+PUT {{domain}}/column/3
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+    "name":"TodoList3"
+}
+
+###
+# 컬럼 삭제
+DELETE  {{domain}}/column/10
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+###
+# 컬럼 Index 이동

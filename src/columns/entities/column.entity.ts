@@ -19,6 +19,6 @@ export class CardColumn {
   @Column({ length: 255 })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'order_index', nullable: true })
   orderIndex: number;
 }
