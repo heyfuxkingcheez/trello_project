@@ -9,6 +9,7 @@ import {
   Patch,
   UseInterceptors,
   UploadedFile,
+  Delete,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -54,5 +55,12 @@ export class UsersController {
       imageFile,
     );
     return { message: '회원 정보가 업데이트되었습니다.', updatedUser };
+  }
+
+  @Delete()
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
+  async deleteUser(@Request() req) {
+    await this.userService.deleteUser(req.user.email);
+    return { message: '회원 탈퇴가 완료되었습니다.' };
   }
 }

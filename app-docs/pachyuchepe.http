@@ -1,5 +1,4 @@
 @domain = http://localhost:3000
-
 @AccessToken = {{loginToken.response.body.$.access_token}}
 
 ### 
@@ -36,21 +35,6 @@ Content-Type: application/json
 POST {{domain}}/auth/refresh
 Authorization: Bearer {{AccessToken}}
 
-### 
-# 사용자 정보 업데이트 - imageUrl
-PATCH {{domain}}/user
-Authorization: Bearer {{AccessToken}}
-Content-Type: application/json
-
-{
-  "currentPassword": "123qweQWE!",
-  "newPassword": "123qweQWE!",
-  "username": "오야지",
-  "imageUrl": "대충 이미지 주소라는 글",
-  "comment": "뭐 임마 뭘 기대했노"
-}
-
-
 ###
 # 사용자 정보 업데이트 - imageFile
 PATCH {{domain}}/user
@@ -79,3 +63,9 @@ Content-Type: image/png
 
 < ./image.png
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 
+# 사용자 삭제
+DELETE {{domain}}/user
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}

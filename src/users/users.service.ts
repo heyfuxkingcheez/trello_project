@@ -46,8 +46,7 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
     imageFile?: Express.Multer.File,
   ): Promise<User> {
-    const { currentPassword, newPassword, username, imageUrl, comment } =
-      updateUserDto;
+    const { currentPassword, newPassword, username, comment } = updateUserDto;
 
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
@@ -82,11 +81,24 @@ export class UsersService {
         imageFile.originalname,
       );
       user.imageUrl = uploadedImageUrl;
-    } else if (imageUrl) {
-      // 이미지 URL이 직접 제공된 경우
-      user.imageUrl = imageUrl;
     }
 
     return this.userRepository.save(user);
+  }
+
+  async deleteUser(email: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new ConflictException('사용자를 찾을 수 없습니다.');
+    }
+
+    // Cloudflare에 저장된 이미지가 있으면 삭제
+    if (user.imageUrl) {
+      await this.cloudflareService.deleteImage(user.imageUrl);
+    }
+
+    // 사용자 데이터베이스에서 사용자 삭제
+    await this.userRepository.remove(user);
   }
 }
