@@ -38,6 +38,7 @@
     "@nestjs/typeorm": "^10.0.1",
     "@types/passport-jwt": "^3.0.13",
     "@types/passport-kakao": "^1.0.3",
+    "@types/passport-local": "^1.0.38",
     "aws-sdk": "^2.1528.0",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
