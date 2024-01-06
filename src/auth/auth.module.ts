@@ -13,6 +13,7 @@ import { EmailService } from '../configs/nodemailer/email.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
+import { CardsModule } from 'src/cards/cards.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { LocalStrategy } from './strategy/local.strategy';
     }),
     UsersModule,
     RedisModule,
+    CardsModule,
   ],
   providers: [
     AuthService,

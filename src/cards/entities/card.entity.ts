@@ -13,13 +13,12 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => CardColumn)
-  @JoinColumn({ name: 'column_id' })
-  column: CardColumn;
+  // @ManyToOne(() => CardColumn)
+  // @JoinColumn({ name: 'column_id' })
+  // column: CardColumn;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'assignee_id' })
-  assignee: User;
+  @Column({ nullable: false })
+  cardOrder: number;
 
   @Column({ length: 255 })
   name: string;

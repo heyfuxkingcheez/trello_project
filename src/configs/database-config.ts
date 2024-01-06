@@ -6,6 +6,7 @@ import { Card } from '../cards/entities/card.entity';
 import { CardColumn } from '../columns/entities/column.entity';
 import { Comment } from '../comments/entities/comment.entity';
 import { BoardInvitation } from '../board-invitations/entities/board-invitation.entity';
+import { CardUser } from 'src/cards/entities/card_user.entity';
 
 export const typeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
@@ -18,7 +19,15 @@ export const typeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
     synchronize: configService.get<boolean>('DB_SYNC'),
-    entities: [User, Board, Card, CardColumn, Comment, BoardInvitation],
+    entities: [
+      User,
+      Board,
+      Card,
+      CardColumn,
+      Comment,
+      BoardInvitation,
+      CardUser,
+    ],
     autoLoadEntities: true,
     logging: true,
   }),
