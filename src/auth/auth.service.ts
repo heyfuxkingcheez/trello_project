@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 
 import { RedisService } from '../configs/redis/redis.service';
 import { UsersService } from '../users/users.service';
+import { EmailService } from '../configs/nodemailer/email.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private redisService: RedisService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -43,5 +45,17 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id };
 
     return this.jwtService.sign(payload);
+  }
+
+  async sendVerificationCode(email: string): Promise<void> {
+    // const code = Math.random().toString(36).substring(2, 8);
+    const code = Math.floor(Math.random() * (999999 - 100000)) + 100000;
+    await this.redisService.setVerificationCode(email, code.toString());
+    await this.emailService.sendVerificationEmail(email, code.toString());
+  }
+
+  async verifyEmail(email: string, code: string): Promise<boolean> {
+    const storedCode = await this.redisService.getVerificationCode(email);
+    return storedCode === code;
   }
 }
