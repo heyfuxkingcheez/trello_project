@@ -71,6 +71,26 @@ Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 ###
+# 메일 인증번호 전송
+# @name loginToken
+POST {{domain}}/auth/send-verification
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com"
+}
+
+###
+# 메일 인증번호 검증
+# @name loginToken
+POST {{domain}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "code": "t8s4ak"
+}
+###
 # 카드 생성
 POST {{domain}}/cards
 Content-Type: application/json
