@@ -14,6 +14,7 @@ document.getElementById('signup-button').addEventListener('click', function () {
     })
     .then(function (response) {
       alert(response.data.message);
+      window.location.reload();
     })
     .catch(function (error) {
       console.error(error);
