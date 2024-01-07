@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+// import { AppController } from './app.controller';
+// import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModuleValidationSchema } from './configs/env-valid';
@@ -13,8 +13,15 @@ import { CardsModule } from './cards/cards.module';
 import { CommentsModule } from './comments/comments.module';
 import { BoardInvitationsModule } from './board-invitations/board-invitations.module';
 
+// 클라이언트 정적 연결
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), // 'public' 디렉토리 지정
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: ConfigModuleValidationSchema,
@@ -28,7 +35,7 @@ import { BoardInvitationsModule } from './board-invitations/board-invitations.mo
     CommentsModule,
     BoardInvitationsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  // controllers: [AppController],
+  // providers: [AppService],
 })
 export class AppModule {}
