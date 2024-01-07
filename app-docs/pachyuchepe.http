@@ -90,35 +90,4 @@ Content-Type: application/json
   "email": "user@gmail.com",
   "code": "t8s4ak"
 }
-###
-# 카드 생성
-POST {{domain}}/cards
-Content-Type: application/json
-Authorization: Bearer {{AccessToken}}
-
-{
-  "name": "제목",
-  "description": "내용",
-  "color": "F000000",
-  "dueDate": "2024-01-12 23:00:00",
-  "cardOrder": 1
-}
-
-###
-# 카드 수정
-PATCH {{domain}}/cards/3
-Content-Type: application/json
-Authorization: Bearer {{AccessToken}}
-
-{
-  "name": "제목 수정",
-  "description": "내용 수정",
-  "color": "F000000",
-  "dueDate": "2024-01-12 23:00:00"
-}
-
-###
-# 카드 삭제
-DELETE {{domain}}/cards/3
-Authorization: Bearer {{AccessToken}}
 

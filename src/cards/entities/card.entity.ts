@@ -13,9 +13,9 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @ManyToOne(() => CardColumn)
-  // @JoinColumn({ name: 'column_id' })
-  // column: CardColumn;
+  @ManyToOne(() => CardColumn, { nullable: false })
+  @JoinColumn({ name: 'column_id' })
+  column: CardColumn;
 
   @Column({ nullable: false })
   cardOrder: number;
