@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello World !</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+      /* Basic Styles */
+      body {
+        margin: 0;
+        padding: 0;
+        background-image: url('https://blog.kakaocdn.net/dn/QQrPR/btsAQgnDxks/1PfZWS69st5BVYhveBRJp0/img.gif');
+        filter: brightness(110%) contrast(120%);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        overflow-y: hidden;
+        color: #333333;
+        font-family: 'Noto Sans', sans-serif;
+        position: relative;
+      }
+
+      ::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.05);
+        z-index: -1;
+      }
+
+      .container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .profile-card {
+        width: auto;
+        max-width: auto;
+        background-color: transparent;
+        padding: 0px;
+        /* border-radius: 10px; */
+        /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+        /* border: 1px solid #e1e1e1; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .flex-col {
+        flex-direction: column;
+      }
+
+      .flex-row {
+        flex-direction: row;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      /* Profile Image */
+      .profile-image {
+        width: 192px;
+        height: 192px;
+        background-color: #d1d1d1;
+        border-radius: 50%;
+        margin-bottom: 20px;
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* Labels */
+      .label {
+        font-weight: bold;
+        margin: 8px;
+        display: block;
+        color: white;
+        text-align: center;
+        font-size: 40px;
+      }
+
+      .main-content {
+        width: 100%;
+        text-align: center;
+      }
+
+      .sidebar {
+        justify-content: center;
+      }
+
+      @media (min-width: 768px) {
+        .sidebar {
+          width: 33.33333%;
+        }
+        .main-content {
+          flex: 1;
+          text-align: center;
+        }
+      }
+
+      .loading span {
+        display: inline-block;
+        margin: 0 -0.05em;
+        animation: loading 1.2s infinite alternate;
+      }
+      .loading span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      .loading span:nth-child(4) {
+        animation-delay: 0.6s;
+      }
+      .loading span:nth-child(5) {
+        animation-delay: 0.8s;
+      }
+      .loading span:nth-child(6) {
+        animation-delay: 1s;
+      }
+      .loading span:nth-child(7) {
+        animation-delay: 1.2s;
+      }
+      .loading span:nth-child(8) {
+        animation-delay: 1.4s;
+      }
+      .loading span:nth-child(9) {
+        animation-delay: 1.6s;
+      }
+      .loading span:nth-child(10) {
+        animation-delay: 1.8s;
+      }
+      @keyframes loading {
+        0% {
+          filter: blur(0);
+          opacity: 1;
+        }
+        100% {
+          filter: blur(5px);
+          opacity: 0.2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="profile-card">
+        <div class="flex flex-row">
+          <div class="main-content">
+            <form>
+              <div>
+                <label for="name" class="label">안녕하세요 세계!</label>
+              </div>
+
+              <div>
+                <div class="label loading">
+                  <span>클</span><span>라</span><span>이</span><span>언</span
+                  ><span>트</span><span>&nbsp;연</span><span>결</span
+                  ><span>&nbsp;테</span><span>스</span><span>트</span>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function goBack() {
+        window.location.href = 'index.html';
+      }
+    </script>
+  </body>
+</html>

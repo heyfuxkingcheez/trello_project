@@ -1,0 +1,23 @@
+/* import */
+@import url('reset.css');
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  color: #333;
+  font-family: Arial, sans-serif;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('../image/background-image3.gif') no-repeat center center;
+  background-size: cover;
+  opacity: 0.5; /* 투명도 50% */
+  z-index: -1; /* 배경이 내용 뒤에 위치하도록 설정 */
+}
