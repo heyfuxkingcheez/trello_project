@@ -70,6 +70,12 @@ DELETE {{domain}}/user
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
+### 
+# 로그아웃
+POST {{domain}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
 ###
 # 메일 인증번호 전송
 # @name loginToken
