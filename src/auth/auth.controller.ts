@@ -67,4 +67,11 @@ export class AuthController {
       throw new ConflictException('인증번호가 일치하지 않습니다.');
     }
   }
+
+  @Post('/logout')
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Request() req) {
+    await this.redisService.removeRefreshToken(req.user.email);
+    return { message: '로그아웃 성공' };
+  }
 }
