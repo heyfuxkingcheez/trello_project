@@ -2,11 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CardDto } from 'src/auth/dto/card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
-import { Repository, getRepository } from 'typeorm';
+import { DataSource, Repository, getRepository } from 'typeorm';
 import { CardColumn } from 'src/columns/entities/column.entity';
 import { BoardInvitation } from 'src/board-invitations/entities/board-invitation.entity';
 import { ColumnsService } from 'src/columns/columns.service';
-import { exist } from 'joi';
 
 @Injectable()
 export class CardsService {
@@ -14,6 +13,7 @@ export class CardsService {
     @InjectRepository(Card)
     private cardsRepository: Repository<Card>,
     private readonly columnsService: ColumnsService,
+    private dataSource: DataSource,
   ) {}
   // 카드 존재 확인
   async existedCard(cardId: number) {
@@ -65,23 +65,73 @@ export class CardsService {
     return updatedCard;
   }
 
-  // 카드 순서 변경
+  // 카드 순서, 다른 컬럼으로 이동
   async updateCardOrder(userId: any, columnId: number, newOrder: any) {
     console.log('newOrder: ', newOrder);
     console.log('columnId: ', columnId);
     console.log('userId: ', userId.id);
 
-    const oldOrderAndOldColumnId = await this.cardsRepository.findOne({
-      where: { id: newOrder.cardId },
-      select: ['cardOrder', 'column'],
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    if (!oldOrderAndOldColumnId)
-      throw new NotFoundException('카드를 찾을 수 없습니다.');
+    try {
+      const newOrderValue = newOrder.newOrder;
 
-    const { column: oldcolumnId, cardOrder: oldOrder } = oldOrderAndOldColumnId;
+      const oldOrderAndOldColumnId = await queryRunner.manager.find(Card, {
+        where: { id: newOrder.cardId },
+      });
 
-    if (newOrder.newOrder === oldOrder) return;
+      if (oldOrderAndOldColumnId[0].id !== newOrder.cardId) {
+        throw new NotFoundException('카드를 찾을 수 없습니다.');
+      }
+
+      const allCards = await this.cardsRepository.find({});
+      const cardOrderValues = allCards.map((card) => card.cardOrder);
+      console.log('cardOrderValues: ', cardOrderValues);
+
+      if (!cardOrderValues.includes(newOrderValue))
+        throw new NotFoundException('실패!');
+
+      let max = 0;
+      let min = 0;
+      if (oldOrderAndOldColumnId[0].cardOrder > newOrderValue) {
+        max = oldOrderAndOldColumnId[0].cardOrder;
+        min = newOrderValue;
+      } else {
+        max = newOrderValue;
+        min = oldOrderAndOldColumnId[0].cardOrder;
+      }
+
+      const currentCards = await this.cardsRepository
+        .createQueryBuilder('card')
+        .where('card.cardOrder >= :min AND card.cardOrder <= :max', {
+          min: min,
+          max: max,
+        })
+        .getMany();
+      console.log('currentCards: ', currentCards);
+
+      const direction =
+        newOrderValue > oldOrderAndOldColumnId[0].cardOrder ? -1 : 1;
+
+      for (const card of currentCards) {
+        card.cardOrder += direction;
+      }
+      oldOrderAndOldColumnId[0].cardOrder = newOrderValue;
+
+      await queryRunner.manager.save(Card, currentCards);
+      await queryRunner.manager.save(Card, oldOrderAndOldColumnId[0]);
+
+      await queryRunner.commitTransaction();
+      return oldOrderAndOldColumnId[0];
+    } catch (error) {
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      return { status: 500, message: '카드순서 변경 실패' };
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   // 카드 컬럼간 이동
