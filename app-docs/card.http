@@ -19,7 +19,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 생성
-POST {{domain}}/column/2
+POST {{domain}}/column/1
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -49,22 +49,22 @@ DELETE {{domain}}/column/2?cardId=12
 Authorization: Bearer {{AccessToken}}
 
 ###
-# 카드 컬럼 간 이동
-PATCH {{domain}}/column/2/card/14
+# 카드 순서 변경
+PATCH {{domain}}/column/1
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "destinationColumnId": 1
+  "newOrder": 3,
+  "cardId": 13
 }
 
 ###
-# 카드 순서 변경
-PATCH {{domain}}/column/2
+# 카드 컬럼 이동
+PATCH {{domain}}/column/:column/card/:cardId
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "newOrder": 1,
-  "cardId": 13
+  "destinationColumnId": 2
 }

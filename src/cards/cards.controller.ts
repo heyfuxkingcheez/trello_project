@@ -47,13 +47,11 @@ export class CardsController {
     @Req() req,
     @Body() newOrder: any,
   ) {
-    const updateCardOrder = await this.cardsService.updateCardOrder(
+    return await this.cardsService.updateCardOrder(
       req.user,
       +columnId,
       newOrder,
     );
-
-    return { status: HttpStatus.OK, message: '카드 순서 수정 성공' };
   }
 
   // 카드 수정
