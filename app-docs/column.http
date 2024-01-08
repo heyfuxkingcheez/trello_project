@@ -1,4 +1,4 @@
-@domain = http://localhost:3000
+@domain = http://localhost:3001
 @AccessToken = {{loginToken.response.body.$.access_token}}
 
 
@@ -9,8 +9,9 @@ POST {{domain}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@gmail.com",
+ "email": "user@gmail.com",
   "password": "123qweQWE!"
+ 
 }
 
 ###
@@ -20,7 +21,7 @@ Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-    "name": "Done5"
+    "name": "Done7"
 }
 
 ###
@@ -32,19 +33,38 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 컬럼 이름 수정
-PUT {{domain}}/column/3
+Patch {{domain}}/column/1/9
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-    "name":"TodoList3"
+    "name":"TodoList7"
 }
 
 ###
 # 컬럼 삭제
-DELETE  {{domain}}/column/10
+DELETE  {{domain}}/column/1/8
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 ###
 # 컬럼 Index 이동
+Patch {{domain}}/board/1/column/movebtn/3
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+    "moveBtn":"left"
+}
+
+
+
+###
+# 드래그로 컬럼 이동
+Patch {{domain}}/board/1/column/movedarg
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+    "columnIndex":[3,9,16,11,15]
+}
