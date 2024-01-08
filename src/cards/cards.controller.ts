@@ -8,10 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CardDto } from './dto/card.dto';
+import { CardDto } from 'src/auth/dto/card.dto';
 import { CardsService } from './cards.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
@@ -39,6 +40,22 @@ export class CardsController {
     return { status: HttpStatus.CREATED, message: '카드 등록 성공', card };
   }
 
+  // 카드 순서 변경
+  @Patch('/column/:columnId')
+  async updateCardOrder(
+    @Param('columnId') columnId: any,
+    @Req() req,
+    @Body() newOrder: any,
+  ) {
+    const updateCardOrder = await this.cardsService.updateCardOrder(
+      req.user,
+      +columnId,
+      newOrder,
+    );
+
+    return { status: HttpStatus.OK, message: '카드 순서 수정 성공' };
+  }
+
   // 카드 수정
   @Patch('/column/:columnId')
   async updateCard(
@@ -51,9 +68,20 @@ export class CardsController {
     return { status: HttpStatus.OK, message: '카드 수정 성공', updatedCard };
   }
 
-  // 카드 이동
-  @Patch('/column/:columnId')
-  async moveCard() {}
+  // 카드 컬럼 간 이동
+  @Patch('/column/:columnId/card/:cardId')
+  async moveCard(
+    @Param('columnId') columnId: string,
+    @Param('cardId') cardId: string,
+    @Body() destinationColumnId: any,
+  ) {
+    const movedCard = await this.cardsService.moveCard(
+      +columnId,
+      +cardId,
+      destinationColumnId.destinationColumnId,
+    );
+    return { status: HttpStatus.OK, message: '카드 이동 성공' };
+  }
 
   // 카드 삭제
   @Delete('/column/:columnId')
