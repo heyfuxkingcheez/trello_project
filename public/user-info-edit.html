@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Update Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="./css/body-background-image.css" />
+    <link rel="stylesheet" href="./css/loading.css" />
+    <link rel="stylesheet" href="./css/header-footer.css" />
+    <script type="module" defer src="./script/header-footer.js"></script>
+    <script defer src="./script/user-info-edit.js"></script>
+  </head>
+  <body class="bg-gray-50">
+    <div id="header"></div>
+    <div class="min-h-screen flex items-center justify-center">
+      <div
+        class="w-2/6 bg-white p-6 rounded shadow-lg flex md:flex-row flex-col items-center justify-center"
+      >
+        <!-- 이미지 업로드 및 미리보기 섹션 -->
+        <div
+          class="flex flex-col items-center justify-center mb-4 md:mb-0 md:mr-4 md:w-1/2"
+        >
+          <div
+            id="imagePreview"
+            class="w-48 h-48 bg-gray-300 rounded-full mb-4 overflow-hidden"
+          ></div>
+          <input
+            type="file"
+            id="imageUpload"
+            class="hidden"
+            onchange="previewImage(event)"
+          />
+          <label
+            for="imageUpload"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
+            >Upload Picture</label
+          >
+        </div>
+
+        <!-- Form Section -->
+        <div class="flex-1 md:w-1/2">
+          <form id="updateProfileForm">
+            <!-- 기존 비밀번호 -->
+            <div class="mb-4">
+              <label
+                for="currentPassword"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >기존 비밀번호</label
+              >
+              <input
+                type="password"
+                id="currentPassword"
+                class="shadow border rounded py-2 px-3 w-full"
+                required
+              />
+            </div>
+
+            <!-- 새 비밀번호 -->
+            <div class="mb-4">
+              <label
+                for="newPassword"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >새 비밀번호</label
+              >
+              <input
+                type="password"
+                id="newPassword"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
+
+            <!-- 사용자 이름 -->
+            <div class="mb-4">
+              <label
+                for="username"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >사용자 이름</label
+              >
+              <input
+                type="text"
+                id="username"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
+
+            <!-- 코멘트 -->
+            <div class="mb-4">
+              <label
+                for="comment"
+                class="block text-gray-700 text-sm font-bold mb-2"
+                >코멘트</label
+              >
+              <textarea
+                id="comment"
+                class="shadow border rounded py-2 px-3 w-full"
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                수정
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="footer"></div>
+  </body>
+</html>
