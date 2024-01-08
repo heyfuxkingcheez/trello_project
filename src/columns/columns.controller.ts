@@ -16,7 +16,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { CardColumnDto } from './dto/column.dto';
-import { BoardAuthGuard } from './board-auth.guard';
+
 import { CardMoveBtnColumnDto } from './dto/column.movebtn.dto';
 import { CardMoveDragColumnDto } from './dto/column.movedrag.dto';
 
@@ -26,7 +26,7 @@ export class ColumnsController {
 
   // 컬럼 생성
   @Post('/board/:boardId/column')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async createColumn(
     @Request() req,
     @Body() cardColumnDto: CardColumnDto,
@@ -41,7 +41,7 @@ export class ColumnsController {
   }
   // 컬럼 목록 조회
   @Get('/board/:boardId/column')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async getColumn(@Param('boardId', ParseIntPipe) boardId: number) {
     const data = await this.columnsService.getColumn(boardId);
     return {
@@ -52,7 +52,7 @@ export class ColumnsController {
   }
   // 컬럼 수정
   @Patch('/column/:boardId/:columnId')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async updateColumn(
     @Body() cardColumnDto: CardColumnDto,
     @Param('columnId', ParseIntPipe) columnId: number,
@@ -69,7 +69,7 @@ export class ColumnsController {
   }
   // 컬럼 삭제
   @Delete('/column/:boardId/:columnId')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async deleteColumn(@Param('columnId', ParseIntPipe) columnId: number) {
     const data = await this.columnsService.deleteColumn(columnId);
     return {
@@ -80,7 +80,7 @@ export class ColumnsController {
   }
   // 버튼으로 컬럼 이동
   @Patch('/board/:boardId/column/movebtn/:columnId')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async moveColumn(
     @Body() cardMoveBtnColumnDto: CardMoveBtnColumnDto,
     @Param('columnId', ParseIntPipe) columnId: number,
@@ -100,7 +100,7 @@ export class ColumnsController {
 
   // 드래그로 컬럼 이동
   @Patch('/board/:boardId/column/movedarg')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async dragColumn(
     @Param('boardId', ParseIntPipe) boardId: number,
     @Body() cardMoveDragColumnDto: CardMoveDragColumnDto,
