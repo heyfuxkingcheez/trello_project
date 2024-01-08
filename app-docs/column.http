@@ -33,7 +33,9 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 컬럼 이름 수정
-Patch {{domain}}/column/1/9
+
+PUT {{domain}}/column/1
+
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
