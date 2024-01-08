@@ -1,0 +1,70 @@
+@domain = http://localhost:3000
+@AccessToken = {{loginToken.response.body.$.access_token}}
+
+###
+# 사용자 로그인
+# @name loginToken
+POST {{domain}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "password": "123qweQWE!"
+}
+
+###
+# 카드 조회
+GET {{domain}}/column/2
+Authorization: Bearer {{AccessToken}}
+
+###
+# 카드 생성
+POST {{domain}}/column/2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "name": "제목",
+  "description": "내용",
+  "color": "F000000",
+  "dueDate": "2024-01-12 23:00:00"
+}
+
+###
+# 카드 수정
+PATCH {{domain}}/column/1?cardId=12
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "name": "제목 수정1",
+  "description": "내용 수정",
+  "color": "F000001",
+  "dueDate": "2024-01-12 23:00:00"
+}
+
+###
+# 카드 삭제
+DELETE {{domain}}/column/2?cardId=12
+Authorization: Bearer {{AccessToken}}
+
+###
+# 카드 컬럼 간 이동
+PATCH {{domain}}/column/2/card/14
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "destinationColumnId": 1
+}
+
+###
+# 카드 순서 변경
+PATCH {{domain}}/column/2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "newOrder": 1,
+  "cardId": 13
+}
