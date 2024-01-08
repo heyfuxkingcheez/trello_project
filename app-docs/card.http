@@ -15,7 +15,7 @@ Content-Type: application/json
 
 ###
 # 카드 생성
-POST {{domain}}/column/1
+POST {{domain}}/column/2
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -28,18 +28,18 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 수정
-PATCH {{domain}}/cards/3
+PATCH {{domain}}/column/1?cardId=12
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "name": "제목 수정",
+  "name": "제목 수정1",
   "description": "내용 수정",
-  "color": "F000000",
+  "color": "F000001",
   "dueDate": "2024-01-12 23:00:00"
 }
 
 ###
 # 카드 삭제
-DELETE {{domain}}/cards/3
+DELETE {{domain}}/column/2?cardId=12
 Authorization: Bearer {{AccessToken}}

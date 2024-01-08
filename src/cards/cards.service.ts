@@ -15,6 +15,23 @@ export class CardsService {
     private cardsRepository: Repository<Card>,
     private readonly columnsService: ColumnsService,
   ) {}
+  // 카드 존재 확인
+  async existedCard(cardId: number) {
+    const existedCard = await this.cardsRepository.findOne({
+      where: { id: cardId },
+      order: { cardOrder: 'ASC' },
+    });
+    if (!existedCard) {
+      throw new NotFoundException('카드를 찾을 수 없습니다.');
+    }
+  }
+  // 카드 조회
+  async getCards(columnId: number) {
+    const cards = await this.cardsRepository.find({
+      where: { column: { id: columnId } },
+    });
+    return cards;
+  }
 
   // 카드 생성
   async createCard(cardDto: CardDto, columnId: number) {
@@ -41,14 +58,20 @@ export class CardsService {
   }
 
   // 카드 수정
-  async updateCard(cardDto: CardDto, cardId: number, columnId: number) {
+  async updateCard(cardDto: CardDto, cardId: number) {
+    await this.existedCard(cardId);
     const updatedCard = await this.cardsRepository.update(cardId, cardDto);
     return updatedCard;
   }
+  // 카드 순서 변경
+  async updateCardOrder() {}
+
   // 카드 이동
+  async moveCard() {}
 
   // 카드 삭제
-  async deleteCard(cardId: number, columnId: number) {
+  async deleteCard(cardId: number) {
+    await this.existedCard(cardId);
     return await this.cardsRepository.delete(cardId);
   }
 }
