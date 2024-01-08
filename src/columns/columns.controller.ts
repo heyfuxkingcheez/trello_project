@@ -10,11 +10,15 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
   UseGuards,
   Request,
+  Patch,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CardColumnDto } from './dto/column.dto';
+import { BoardAuthGuard } from './board-auth.guard';
+import { CardMoveBtnColumnDto } from './dto/column.movebtn.dto';
+import { CardMoveDragColumnDto } from './dto/column.movedrag.dto';
 
 @Controller('')
 export class ColumnsController {
@@ -22,17 +26,13 @@ export class ColumnsController {
 
   // 컬럼 생성
   @Post('/board/:boardId/column')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
   async createColumn(
     @Request() req,
     @Body() cardColumnDto: CardColumnDto,
-    @Param('boardId') boardId: number,
+    @Param('boardId', ParseIntPipe) boardId: number,
   ) {
-    const data = await this.columnsService.createColumn(
-      cardColumnDto,
-      boardId,
-      req.user.id,
-    );
+    const data = await this.columnsService.createColumn(cardColumnDto, boardId);
     return {
       statusCode: HttpStatus.CREATED,
       message: '컬럼 생성에 성공했습니다',
@@ -41,9 +41,9 @@ export class ColumnsController {
   }
   // 컬럼 목록 조회
   @Get('/board/:boardId/column')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
-  async getColumn(@Param('boardId') boardId: number, @Request() req) {
-    const data = await this.columnsService.getColumn(boardId, req.user.id);
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  async getColumn(@Param('boardId', ParseIntPipe) boardId: number) {
+    const data = await this.columnsService.getColumn(boardId);
     return {
       statusCode: HttpStatus.CREATED,
       message: '컬럼 조회에 성공했습니다',
@@ -51,17 +51,15 @@ export class ColumnsController {
     };
   }
   // 컬럼 수정
-  @Put('/column/:columnId')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
+  @Patch('/column/:boardId/:columnId')
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
   async updateColumn(
-    @Request() req,
     @Body() cardColumnDto: CardColumnDto,
-    @Param('columnId') columnId: number,
+    @Param('columnId', ParseIntPipe) columnId: number,
   ) {
     const data = await this.columnsService.updateColumn(
       cardColumnDto,
       columnId,
-      req.user.id,
     );
     return {
       statusCode: HttpStatus.CREATED,
@@ -70,37 +68,52 @@ export class ColumnsController {
     };
   }
   // 컬럼 삭제
-  @Delete('/column/:columnId')
-  @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
-  async deleteColumn(
-    @Request() req,
-
-    @Param('columnId') columnId: number,
-  ) {
-    const data = await this.columnsService.deleteColumn(columnId, req.user.id);
+  @Delete('/column/:boardId/:columnId')
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  async deleteColumn(@Param('columnId', ParseIntPipe) columnId: number) {
+    const data = await this.columnsService.deleteColumn(columnId);
     return {
       statusCode: HttpStatus.CREATED,
       message: '컬럼 삭제에 성공했습니다',
       data,
     };
   }
-  // 컬럼 이동
-  // @Put('/column/move/:columnId')
-  // @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
-  // async moveColumn(
-  //   @Request() req,
-  //   @Param('columnId') columnId: number,
-  //   @Body() cardColumnDto: CardColumnDto,
-  // ) {
-  //   const data = await this.columnsService.moveColumn(
-  //     columnId,
-  //     req.user.id,
-  //     cardColumnDto,
-  //   );
-  //   return {
-  //     statusCode: HttpStatus.CREATED,
-  //     message: '컬럼 이동에 성공했습니다',
-  //     data,
-  //   };
-  // }
+  // 버튼으로 컬럼 이동
+  @Patch('/board/:boardId/column/movebtn/:columnId')
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  async moveColumn(
+    @Body() cardMoveBtnColumnDto: CardMoveBtnColumnDto,
+    @Param('columnId', ParseIntPipe) columnId: number,
+    @Param('boardId', ParseIntPipe) boardId: number,
+  ) {
+    const data = await this.columnsService.moveColumn(
+      cardMoveBtnColumnDto,
+      columnId,
+      boardId,
+    );
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '컬럼 버튼 이동에 성공했습니다',
+      data,
+    };
+  }
+
+  // 드래그로 컬럼 이동
+  @Patch('/board/:boardId/column/movedarg')
+  @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardAuthGuard)
+  async dragColumn(
+    @Param('boardId', ParseIntPipe) boardId: number,
+    @Body() cardMoveDragColumnDto: CardMoveDragColumnDto,
+  ) {
+    const data = await this.columnsService.dragColumn(
+      cardMoveDragColumnDto,
+      boardId,
+    );
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: '컬럼 드래그 이동에 성공했습니다',
+      data,
+    };
+  }
 }
