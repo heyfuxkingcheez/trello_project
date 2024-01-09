@@ -99,3 +99,42 @@ function updateProfile(event) {
       console.error('회원 정보 업데이트 중 오류 발생', error);
     });
 }
+
+// 회원 탈퇴 이벤트 리스너 추가
+document
+  .getElementById('delete-profile-button')
+  .addEventListener('click', deleteUserProfile);
+
+// 회원 탈퇴 요청 함수
+function deleteUserProfile() {
+  const accessToken = localStorage.getItem('access_token');
+  if (!accessToken) {
+    alert('로그인이 필요한 기능입니다.');
+    window.location.href = '/user-login.html';
+    return;
+  }
+
+  if (!confirm('정말로 계정을 삭제하시겠습니까?')) {
+    return; // 사용자가 취소를 눌렀을 때
+  }
+
+  showLoading(); // 로딩 표시기 시작
+
+  axios
+    .delete('/user', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((response) => {
+      alert(response.data.message);
+      hideLoading(); // 로딩 표시기 종료
+      localStorage.removeItem('access_token'); // 토큰 삭제
+      window.location.href = '/user-login.html';
+    })
+    .catch((error) => {
+      alert('회원 탈퇴에 실패했습니다.');
+      hideLoading(); // 로딩 표시기 종료
+      console.error('회원 탈퇴 중 오류 발생', error);
+    });
+}
