@@ -41,7 +41,7 @@ export class CardsController {
   }
 
   // 작업자 조회
-  @Get('/woker')
+  @Get('/worker')
   async getWorker(@Req() req, @Param('boardId') boardId: string) {
     const existedWokerAtBoard = await this.cardsService.getWorker(
       req.user.id,
@@ -55,7 +55,7 @@ export class CardsController {
   }
 
   // 작업자 할당
-  @Post('/card/:cardId/woker')
+  @Post('/card/:cardId/worker')
   async selectWorker(
     @Param('cardId') cardId: string,
     @Req() req,
@@ -70,6 +70,23 @@ export class CardsController {
       selectedWoker,
     );
     return { status: HttpStatus.OK, message: '작업자 할당 성공', worker };
+  }
+  // 작업자 삭제
+  @Delete('/card/:cardId/worker')
+  async deleteWorker(
+    @Param('cardId') cardId: string,
+    @Body() selectedWorker: Array<object>,
+    @Param('boardId') boardId: string,
+    @Req() req,
+  ) {
+    await this.cardsService.deleteWorker(
+      +cardId,
+      selectedWorker,
+      +boardId,
+      req.user.id,
+    );
+
+    return { status: HttpStatus.OK, message: '작업자 삭제 성공' };
   }
 
   // 카드 순서 변경
