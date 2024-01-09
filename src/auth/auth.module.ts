@@ -14,6 +14,7 @@ import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { CardsModule } from 'src/cards/cards.module';
+import { BoardsModule } from 'src/boards/boards.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CardsModule } from 'src/cards/cards.module';
     UsersModule,
     RedisModule,
     CardsModule,
+    BoardsModule,
   ],
   providers: [
     AuthService,

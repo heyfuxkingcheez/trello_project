@@ -54,6 +54,12 @@ export class CommentsService {
     // 카드 존재하는지 유무
     await this.cardsService.existedCard(cardId);
 
+    // 댓글 존재하는지 확인
+    const existComment = await this.commentRepository.findOne({
+      where: { id: commentId },
+    });
+    if (!existComment) throw new NotFoundException('댓글을 찾을 수 없습니다.');
+
     // 댓글 작성자인지 확인
     const check = await this.commentRepository.findOne({
       where: { user: { id: userId }, card: { id: cardId }, id: commentId },

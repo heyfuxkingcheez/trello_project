@@ -30,6 +30,6 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 댓글 삭제
-DELETE {{domain}}/board/1/card/13/comment/1
+DELETE {{domain}}/board/1/card/13/comment/3
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
