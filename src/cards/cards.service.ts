@@ -148,6 +148,22 @@ export class CardsService {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
     }
 
+    const [cardsInColumn, Count]: any = await this.cardsRepository.findAndCount(
+      {
+        where: { column: { id: destinationColumnId } },
+        order: { cardOrder: 'ASC' },
+      },
+    );
+
+    const a = cardsInColumn.map((data: any) => data.id);
+
+    for (let i = 0; i < a.length; i++) {
+      await this.cardsRepository.update(a[i], {
+        cardOrder: i,
+      });
+    }
+    await this.cardsRepository.update(cardId, { cardOrder: Count });
+
     const updatedCard = await this.cardsRepository.update(cardId, {
       column: { id: destinationColumnId },
     });

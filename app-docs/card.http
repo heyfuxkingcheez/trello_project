@@ -14,12 +14,12 @@ Content-Type: application/json
 
 ###
 # 카드 조회
-GET {{domain}}/column/2/cards
+GET {{domain}}/board/1/column/1/cards
 Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 생성
-POST {{domain}}/column/1/card
+POST {{domain}}/board/1/column/1/card
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -32,7 +32,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 수정
-PATCH {{domain}}/column/1/card/13
+PATCH {{domain}}/board/1/column/1/card/13
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -45,26 +45,26 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 삭제
-DELETE {{domain}}/column/2/card/13
+DELETE {{domain}}/board/1/column/2/card/13
 Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 순서 변경
-PATCH {{domain}}/column/1/cardOrder
+PATCH {{domain}}/board/1/column/1/cardOrder
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
   "newOrder": 3,
-  "cardId": 13
+  "cardId": 14
 }
 
 ###
 # 카드 컬럼 이동
-PATCH {{domain}}/column/1/cardMove/13
+PATCH {{domain}}/board/1/column/2/cardMove/13
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "destinationColumnId": 2
+  "destinationColumnId": 1
 }
