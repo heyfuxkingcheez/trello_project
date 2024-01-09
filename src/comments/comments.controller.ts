@@ -17,9 +17,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentsService } from './comments.service';
+import { BoardInvitationGuard } from 'src/auth/guard/board-invitation.guard';
 
 @Controller('board')
-@UseGuards(AuthGuard('jwt'), JwtAuthGuard)
+@UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardInvitationGuard)
 export class CommentsController {
   constructor(
     @InjectRepository(Card)

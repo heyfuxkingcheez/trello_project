@@ -6,9 +6,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Observable } from 'rxjs';
 import { BoardInvitation } from 'src/board-invitations/entities/board-invitation.entity';
-import { CardColumn } from 'src/columns/entities/column.entity';
+import { Board } from 'src/boards/entities/board.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -16,24 +15,20 @@ export class BoardInvitationGuard implements CanActivate {
   constructor(
     @InjectRepository(BoardInvitation)
     private readonly boardInvitationRepository: Repository<BoardInvitation>,
-    @InjectRepository(CardColumn)
-    private readonly columnRepository: Repository<CardColumn>,
+    @InjectRepository(Board)
+    private readonly boardRepository: Repository<Board>,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userId = request.user.id;
+    const { boardId } = request.params;
 
-    const { columnId } = request.params;
-    const existingColumn = await this.columnRepository.findOne({
-      where: { id: columnId },
-      relations: ['board'],
+    const existingBoard = await this.boardRepository.findOne({
+      where: { id: boardId },
     });
-
-    if (!existingColumn) {
-      throw new NotFoundException('컬럼을 찾을 수 없습니다.');
+    if (!existingBoard) {
+      throw new NotFoundException('보드를 찾을 수 없습니다.');
     }
-
-    const boardId = existingColumn.board.id;
 
     const existedUser = await this.boardInvitationRepository.findOne({
       where: {
