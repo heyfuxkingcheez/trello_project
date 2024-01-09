@@ -56,15 +56,30 @@ Authorization: Bearer {{AccessToken}}
 
 {
   "newOrder": 3,
-  "cardId": 14
+  "cardId": 13
 }
 
 ###
 # 카드 컬럼 이동
-PATCH {{domain}}/board/1/column/2/cardMove/13
+PATCH {{domain}}/board/1/column/1/cardMove/13
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "destinationColumnId": 1
+  "destinationColumnId": 2
 }
+
+###
+# 카드에 속한 작업자 조회
+GET {{domain}}/board/1/woker
+Authorization: Bearer {{AccessToken}}
+
+### 
+# 카드에 작업자 할당
+POST {{domain}}/board/1/card/13/woker
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+[
+  {"selectedWoker": 1}
+]
