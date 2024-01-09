@@ -22,6 +22,7 @@ export class BoardsService {
 
         const createdBoard = await this.boardRepository.save({
             name: boardDto.name,
+            backgroundColor: boardDto.backgroundColor,
             description: boardDto.description,
             creator_id: userId
         });
@@ -93,6 +94,7 @@ export class BoardsService {
 
         const updateBoard = await this.boardRepository.update( {id:boardId}, {
             name: boardDto.name,
+            backgroundColor: boardDto.backgroundColor,
             description: boardDto.description
         });
 
