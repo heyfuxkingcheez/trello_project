@@ -57,12 +57,12 @@ export class ColumnsService {
   async updateColumn(cardColumnDto: CardColumnDto, columnId: number) {
     const existingColumn = await this.getColumnById(columnId);
     if (existingColumn.name === cardColumnDto.name) {
-      throw new ConflictException('이미 존재하는 컬럼명입니다');
+      throw new ConflictException('이전과 같은 컬럼명입니다');
     }
-    await this.columnsRepository.update(columnId, {
+    const updateColumn = await this.columnsRepository.update(columnId, {
       name: cardColumnDto.name,
     });
-
+    existingColumn.name = cardColumnDto.name;
     return await this.columnsRepository.save(existingColumn);
   }
 
