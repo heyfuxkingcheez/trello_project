@@ -18,8 +18,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { BoardInvitationGuard } from 'src/auth/guard/board-invitation.guard';
 
-@UseGuards(AuthGuard('jwt'), JwtAuthGuard)
-@Controller('')
+@UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardInvitationGuard)
+@Controller('board/:boardId')
 export class CardsController {
   constructor(private cardsService: CardsService) {}
 
