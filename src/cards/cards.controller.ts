@@ -40,6 +40,38 @@ export class CardsController {
     return { status: HttpStatus.CREATED, message: '카드 등록 성공', card };
   }
 
+  // 작업자 조회
+  @Get('/woker')
+  async getWorker(@Req() req, @Param('boardId') boardId: string) {
+    const existedWokerAtBoard = await this.cardsService.getWorker(
+      req.user.id,
+      +boardId,
+    );
+    return {
+      status: HttpStatus.OK,
+      message: '작업자 조회 성공',
+      existedWokerAtBoard,
+    };
+  }
+
+  // 작업자 할당
+  @Post('/card/:cardId/woker')
+  async selectWorker(
+    @Param('cardId') cardId: string,
+    @Req() req,
+    @Param('boardId') boardId: string,
+    @Body() selectedWoker: Array<object>,
+  ) {
+    console.log(selectedWoker);
+    const worker = await this.cardsService.selectWorker(
+      +cardId,
+      req.user.id,
+      +boardId,
+      selectedWoker,
+    );
+    return { status: HttpStatus.OK, message: '작업자 할당 성공', worker };
+  }
+
   // 카드 순서 변경
   @Patch('/column/:columnId/cardOrder')
   async updateCardOrder(
@@ -73,7 +105,7 @@ export class CardsController {
     @Param('cardId') cardId: string,
     @Body() destinationColumnId: any,
   ) {
-    const movedCard = await this.cardsService.moveCard(
+    await this.cardsService.moveCard(
       +columnId,
       +cardId,
       destinationColumnId.destinationColumnId,

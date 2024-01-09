@@ -1,17 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CardDto } from 'src/auth/dto/card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
-import { DataSource, Repository, getRepository } from 'typeorm';
+import { DataSource, QueryResult, Repository, getRepository } from 'typeorm';
 import { CardColumn } from 'src/columns/entities/column.entity';
 import { BoardInvitation } from 'src/board-invitations/entities/board-invitation.entity';
 import { ColumnsService } from 'src/columns/columns.service';
+import { CardUser } from './entities/card_user.entity';
+import { filter } from 'lodash';
 
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Card)
     private cardsRepository: Repository<Card>,
+    @InjectRepository(BoardInvitation)
+    private boardInvitationRepository: Repository<BoardInvitation>,
+    @InjectRepository(CardUser)
+    private cardUserRepository: Repository<CardUser>,
     private readonly columnsService: ColumnsService,
     private dataSource: DataSource,
   ) {}
@@ -32,6 +42,62 @@ export class CardsService {
       order: { cardOrder: 'ASC' },
     });
     return cards;
+  }
+
+  // 작업자 조회
+  async getWorker(userId: number, boardId: number) {
+    const getCardUsers = await this.boardInvitationRepository.find({
+      where: {
+        user: { id: userId },
+        status: 'invited',
+        board: { id: boardId },
+      },
+    });
+    let wokers: any = getCardUsers.map((user) => user.id);
+    console.log('작업자들: ', wokers);
+
+    return wokers;
+  }
+
+  // 작업자 할당
+  async selectWorker(
+    cardId: number,
+    userId: number,
+    boardId: number,
+    selectedWoker: any,
+  ) {
+    console.log(cardId, userId, boardId);
+    // 보드에 초대된 사용자들 찾기
+    const workers = await this.getWorker(userId, boardId);
+    // 선택된 사용자들
+    let selectWorker = selectedWoker.map((worker) => worker.selectedWoker);
+    // 보드에 초대된 사용자와 선택된 사용자들 필터
+    const filteredWorkers = selectWorker.filter((worker) =>
+      workers.includes(worker),
+    );
+    // 보드에 초대된 작업자인지 확인하는 예외 처리
+    const UnBelongToBoard = selectWorker.filter(
+      (worker) => !workers.includes(worker),
+    );
+
+    if (UnBelongToBoard.length !== 0)
+      throw new BadRequestException('잘못된 요청입니다.');
+
+    for (let i = 0; i < filteredWorkers.length; i++) {
+      // DB에 이미 존재하는지 확인
+      const existWorker = await this.cardUserRepository.findOne({
+        where: { user: { id: filteredWorkers[i] } },
+      });
+      if (existWorker) {
+        throw new BadRequestException('이미 추가했습니다.');
+      }
+      // 저장
+      await this.cardUserRepository.save({
+        card: { id: cardId },
+        user: { id: filteredWorkers[i] },
+      });
+    }
+    return workers;
   }
 
   // 카드 생성
@@ -140,35 +206,46 @@ export class CardsService {
     cardId: number,
     destinationColumnId: number,
   ) {
-    const existedCard = await this.cardsRepository.findOne({
-      where: { column: { id: columnId } },
-    });
-
-    if (!existedCard) {
-      throw new NotFoundException('컬럼을 찾을 수 없습니다.');
-    }
-
-    const [cardsInColumn, Count]: any = await this.cardsRepository.findAndCount(
-      {
-        where: { column: { id: destinationColumnId } },
-        order: { cardOrder: 'ASC' },
-      },
-    );
-
-    const a = cardsInColumn.map((data: any) => data.id);
-
-    for (let i = 0; i < a.length; i++) {
-      await this.cardsRepository.update(a[i], {
-        cardOrder: i,
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const existedCard = await queryRunner.manager.findOne(Card, {
+        where: { column: { id: columnId } },
       });
+
+      if (!existedCard) {
+        throw new NotFoundException('컬럼을 찾을 수 없습니다.');
+      }
+
+      const [cardsInColumn, Count]: any =
+        await queryRunner.manager.findAndCount(Card, {
+          where: { column: { id: destinationColumnId } },
+          order: { cardOrder: 'ASC' },
+        });
+
+      const a = cardsInColumn.map((data: any) => data.id);
+
+      for (let i = 0; i < a.length; i++) {
+        await queryRunner.manager.update(Card, a[i], {
+          cardOrder: i,
+        });
+      }
+      await queryRunner.manager.update(Card, cardId, { cardOrder: Count });
+
+      const updatedCard = await queryRunner.manager.update(Card, cardId, {
+        column: { id: destinationColumnId },
+      });
+
+      await queryRunner.commitTransaction();
+      return updatedCard;
+    } catch (error) {
+      console.log(error);
+      await queryRunner.rollbackTransaction();
+      return { message: '실패!' };
+    } finally {
+      await queryRunner.release();
     }
-    await this.cardsRepository.update(cardId, { cardOrder: Count });
-
-    const updatedCard = await this.cardsRepository.update(cardId, {
-      column: { id: destinationColumnId },
-    });
-
-    return updatedCard;
   }
 
   // 카드 삭제
