@@ -2,12 +2,13 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CardColumnDto } from './dto/column.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CardColumn } from './entities/column.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CardMoveBtnColumnDto } from './dto/column.movebtn.dto';
 import { CardMoveDragColumnDto } from './dto/column.movedrag.dto';
 
@@ -16,6 +17,7 @@ export class ColumnsService {
   constructor(
     @InjectRepository(CardColumn)
     private readonly columnsRepository: Repository<CardColumn>,
+    private dataSource: DataSource,
   ) {}
   // 컬럼 생성
   async createColumn(cardColumnDto: CardColumnDto, boardId: number) {
@@ -149,26 +151,46 @@ export class ColumnsService {
     cardMoveDragColumnDto: CardMoveDragColumnDto,
     boardId: number,
   ) {
-    const getColumns = await this.columnsRepository.find({
-      where: { board: { id: boardId } },
-    });
+    if (
+      new Set(cardMoveDragColumnDto.columnIndex).size !==
+      cardMoveDragColumnDto.columnIndex.length
+    ) {
+      throw new BadRequestException('배열에 중복된 값이 포함되어 있습니다');
+    }
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    cardMoveDragColumnDto.columnIndex.map((columnId, index) => {
-      const existColumn = getColumns.find((column) => column.id === columnId);
-      if (!existColumn) {
-        throw new NotFoundException('존재하지 않은 columnId가 존재합니다');
-      }
-      existColumn.orderIndex = index + 1;
-      this.columnsRepository.update(columnId, {
-        orderIndex: existColumn.orderIndex,
+    try {
+      const getColumns = await this.columnsRepository.find({
+        where: { board: { id: boardId } },
       });
-    });
+      cardMoveDragColumnDto.columnIndex.map((columnId, index) => {
+        const existColumn = getColumns.find((column) => column.id === columnId);
+        if (!existColumn) {
+          throw new NotFoundException('존재하지 않은 columnId가 존재합니다');
+        }
+        existColumn.orderIndex = index + 1;
+        queryRunner.manager.update(CardColumn, columnId, {
+          orderIndex: existColumn.orderIndex,
+        });
+      });
+      await queryRunner.commitTransaction();
+      const sortedColumns = getColumns.sort(
+        (a, b) => a.orderIndex - b.orderIndex,
+      );
 
-    const sortedColumns = getColumns.sort(
-      (a, b) => a.orderIndex - b.orderIndex,
-    );
-
-    return sortedColumns;
+      return sortedColumns;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('존재하지 않은 columnId가 존재합니다');
+      } else {
+        throw new InternalServerErrorException('관리자에게 문의하십시오');
+      }
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   // columnId로 컬럼 찾기
