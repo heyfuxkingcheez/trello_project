@@ -21,7 +21,7 @@ Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-    "name": "Done7"
+    "name": "done"
 }
 
 ###
@@ -33,30 +33,28 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 컬럼 이름 수정
-
-PUT {{domain}}/column/1
-
+PATCH  {{domain}}/column/50
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-    "name":"TodoList7"
+    "name":"Todo22"
 }
 
 ###
 # 컬럼 삭제
-DELETE  {{domain}}/column/1/8
+DELETE  {{domain}}/column/49
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 ###
 # 컬럼 Index 이동
-Patch {{domain}}/board/1/column/movebtn/3
+Patch {{domain}}/board/1/column/movebtn/48
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-    "moveBtn":"left"
+    "moveBtn":"right"
 }
 
 
@@ -68,5 +66,5 @@ Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-    "columnIndex":[3,9,16,11,15]
+    "columnIndex":[48,50,49]
 }

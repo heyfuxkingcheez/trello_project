@@ -26,6 +26,9 @@ export class Board {
   @JoinColumn({ name: 'creator_id' })
   creator: User;
 
+  @Column({type: 'int', name: 'creator_id' })
+  creator_id: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

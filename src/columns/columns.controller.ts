@@ -51,7 +51,7 @@ export class ColumnsController {
     };
   }
   // 컬럼 수정
-  @Patch('/column/:boardId/:columnId')
+  @Patch('/column/:columnId')
   @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async updateColumn(
     @Body() cardColumnDto: CardColumnDto,
@@ -68,7 +68,7 @@ export class ColumnsController {
     };
   }
   // 컬럼 삭제
-  @Delete('/column/:boardId/:columnId')
+  @Delete('/column/:columnId')
   @UseGuards(AuthGuard('jwt'), JwtAuthGuard)
   async deleteColumn(@Param('columnId', ParseIntPipe) columnId: number) {
     const data = await this.columnsService.deleteColumn(columnId);

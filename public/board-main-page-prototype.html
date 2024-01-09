@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>보드 상세 페이지</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/loading.css" />
+    <link rel="stylesheet" href="./css/header-footer.css" />
+    <script type="module" defer src="./script/header-footer.js"></script>
+    <style>
+      .board-details {
+        margin: 20px;
+        padding: 20px;
+        border: 2px solid #000;
+      }
+      #body-second {
+        padding-top: 80px;
+        padding-bottom: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header"></div>
+    <body id="body-second">
+      <div class="board-details" id="board-container">
+        <h2 id="board-name">보드 이름</h2>
+        <p id="board-description">보드 설명</p>
+        <!-- 추가적인 보드 정보를 여기에 표시 -->
+      </div>
+      <div id="footer"></div>
+    </body>
+    <script>
+      // 쿼리 파라미터에서 보드 상세 정보를 가져오는 JavaScript 코드
+      document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const color = urlParams.get('color');
+        const description = urlParams.get('description');
+
+        document.getElementById('board-name').textContent =
+          decodeURIComponent(name);
+        document.getElementById('board-description').textContent =
+          decodeURIComponent(description);
+        document.getElementById('board-container').style.borderColor =
+          decodeURIComponent(color);
+      });
+    </script>
+  </body>
+</html>

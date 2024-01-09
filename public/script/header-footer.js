@@ -172,6 +172,7 @@ function refreshAccessToken() {
     });
 }
 
+// 헤더 프로필 이미지 받아오는 함수
 function fetchUserProfileImage() {
   axios
     .get('/user/profile', {
