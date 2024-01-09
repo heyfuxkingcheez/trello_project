@@ -4,7 +4,6 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { invitationDto } from './dto/invitation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from 'src/boards/entities/board.entity';
-import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { BoardInvitation } from './entities/board-invitation.entity';
 @Injectable()
