@@ -62,7 +62,7 @@ export class ColumnsService {
     await this.columnsRepository.update(columnId, {
       name: cardColumnDto.name,
     });
-    existingColumn.name = cardColumnDto.name;
+
     return await this.columnsRepository.save(existingColumn);
   }
 
