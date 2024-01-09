@@ -12,7 +12,7 @@ import { User } from '../../users/entities/user.entity';
 @Entity('board_invitations')
 export class BoardInvitation {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
