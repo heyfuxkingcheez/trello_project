@@ -36,6 +36,7 @@ document
       .catch(function (error) {
         alert(error.response.data.message);
         console.error('인증번호 전송 실패', error);
+        hideLoading();
       });
   });
 

@@ -22,9 +22,7 @@ function handleLogin(event) {
       localStorage.setItem('access_token', access_token);
       console.log(response.data);
       alert(response.data.message);
-      window.location.reload();
-      // 로그인 성공 후 페이지 리디렉션 (필요한 경우)
-      // window.location.href = '/some-logged-in-page.html';
+      window.location.href = '/user-my-page.html';
     })
     .catch((error) => {
       console.error(error);

@@ -5,6 +5,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadFooter();
   startTokenCountdown();
   addTokenCountdownClickListener();
+  fetchUserProfileImage();
 });
 
 // 헤더 로드 함수
@@ -47,7 +48,7 @@ function addHeaderEventListeners() {
 function createProfileMenu(profileMenu) {
   const isLoggedIn = checkLoginStatus();
   if (isLoggedIn) {
-    profileMenu.appendChild(createMenuItem('#', '마이페이지'));
+    profileMenu.appendChild(createMenuItem('/user-my-page.html', '마이페이지'));
     const logoutItem = createMenuItem('#', '로그아웃');
     logoutItem.addEventListener('click', logoutUser);
     profileMenu.appendChild(logoutItem);
@@ -168,5 +169,32 @@ function refreshAccessToken() {
     })
     .catch((error) => {
       console.error(error.response.data.message);
+    });
+}
+
+function fetchUserProfileImage() {
+  axios
+    .get('/user/profile', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    })
+    .then((response) => {
+      const userProfile = response.data;
+      if (userProfile.imageUrl) {
+        const profileImg = document.querySelector('.profile-img');
+        if (userProfile.imageUrl) {
+          profileImg.src = userProfile.imageUrl;
+          profileImg.style.borderRadius = '50%';
+          profileImg.style.width = '44px';
+          profileImg.style.height = '44px';
+          profileImg.style.objectFit = 'cover';
+        }
+      }
+    })
+    .catch((error) => {
+      console.error('프로필 이미지를 불러오는데 실패했습니다:', error);
+      // 오류 처리 및 기본 이미지 설정
+      // document.querySelector('.profile-img').src = './image/Profil.png';
     });
 }
