@@ -12,7 +12,7 @@ export class CardColumn {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
