@@ -18,9 +18,15 @@ export class BoardInvitation {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Column({ type: 'int', nullable: false })
+  user_id: number;
+
   @ManyToOne(() => Board)
   @JoinColumn({ name: 'board_id' })
   board: Board;
+
+  @Column({ type: 'int', nullable: false })
+  board_id: number;
 
   @Column({ type: 'enum', enum: ['invited', 'accepted', 'declined'] })
   status: string;
