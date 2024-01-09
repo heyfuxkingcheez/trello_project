@@ -3,7 +3,9 @@ import { BoardInvitationsService } from './board-invitations.service';
 import { AuthGuard } from '@nestjs/passport';
 import { invitationDto } from './dto/invitation.dto';
 import { updateInvitationDto } from './dto/update-invitation.dto';
-@UseGuards(AuthGuard('jwt'))
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+
+@UseGuards(AuthGuard('jwt'), JwtAuthGuard)
 @Controller('board-invitations')
 export class BoardInvitationsController {
     constructor(private readonly boardInvitationService: BoardInvitationsService) {}
