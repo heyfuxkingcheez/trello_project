@@ -71,15 +71,25 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드에 속한 작업자 조회
-GET {{domain}}/board/1/woker
+GET {{domain}}/board/1/worker
 Authorization: Bearer {{AccessToken}}
 
 ### 
 # 카드에 작업자 할당
-POST {{domain}}/board/1/card/13/woker
+POST {{domain}}/board/1/card/13/worker
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 [
-  {"selectedWoker": 1}
+  {"selectedWorker": 1}
+]
+
+###
+# 카드의 작업자 삭제
+DELETE {{domain}}/board/1/card/13/worker
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+[
+  {"selectedWorker": 1}
 ]

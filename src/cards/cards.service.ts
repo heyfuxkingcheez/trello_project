@@ -70,7 +70,7 @@ export class CardsService {
     // 보드에 초대된 사용자들 찾기
     const workers = await this.getWorker(userId, boardId);
     // 선택된 사용자들
-    let selectWorker = selectedWoker.map((worker) => worker.selectedWoker);
+    let selectWorker = selectedWoker.map((worker) => worker.selectedWorker);
     // 보드에 초대된 사용자와 선택된 사용자들 필터
     const filteredWorkers = selectWorker.filter((worker) =>
       workers.includes(worker),
@@ -98,6 +98,32 @@ export class CardsService {
       });
     }
     return workers;
+  }
+
+  // 작업자 삭제
+  async deleteWorker(
+    cardId: number,
+    selectedWorker: any,
+    boardId: number,
+    userId: number,
+  ) {
+    const workers = await this.getWorker(userId, boardId);
+    const selectWorker = selectedWorker.map((worker) => worker.selectedWorker);
+    const filteredWorkers = selectWorker.filter((worker) =>
+      workers.includes(worker),
+    );
+    const UnBelongToBoard = selectWorker.filter(
+      (worker) => !workers.includes(worker),
+    );
+    if (UnBelongToBoard.length !== 0) {
+      throw new BadRequestException('잘못된 요청입니다.');
+    }
+    for (let i = 0; i < filteredWorkers.length; i++) {
+      await this.cardUserRepository.delete({
+        card: { id: cardId },
+        user: { id: filteredWorkers[i] },
+      });
+    }
   }
 
   // 카드 생성
