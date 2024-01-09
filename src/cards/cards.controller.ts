@@ -12,11 +12,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CardDto } from 'src/auth/dto/card.dto';
+import { CardDto } from './dto/card.dto';
 import { CardsService } from './cards.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { BoardInvitationGuard } from 'src/auth/guard/board-invitation.guard';
+import { Status } from './types/status.type';
 
 @UseGuards(AuthGuard('jwt'), JwtAuthGuard, BoardInvitationGuard)
 @Controller('board/:boardId')
@@ -28,6 +29,13 @@ export class CardsController {
   async getCards(@Param('columnId') columnId: string) {
     const cards = await this.cardsService.getCards(+columnId);
     return { status: HttpStatus.OK, message: '카드 조회 성공', cards };
+  }
+
+  // 카드 상세 조회
+  @Get('/card/:cardId')
+  async getCardOne(@Param('cardId') cardId: string) {
+    const card = await this.cardsService.getCardOne(+cardId);
+    return { status: HttpStatus.OK, message: '카드 조회 성공', card };
   }
 
   // 카드 생성
@@ -89,6 +97,17 @@ export class CardsController {
     return { status: HttpStatus.OK, message: '작업자 삭제 성공' };
   }
 
+  // 마감 상태 변경
+  @Patch('/card/:cardId/status')
+  async updateStatus(@Param('cardId') cardId: string, @Body() status: Status) {
+    const updatedStatus = await this.cardsService.updateStatus(+cardId, status);
+    return {
+      status: HttpStatus.OK,
+      message: '마감 상태 변경 완료',
+      updatedStatus,
+    };
+  }
+
   // 카드 순서 변경
   @Patch('/column/:columnId/cardOrder')
   async updateCardOrder(
@@ -104,12 +123,8 @@ export class CardsController {
   }
 
   // 카드 수정
-  @Patch('/column/:columnId/card/:cardId')
-  async updateCard(
-    @Body() cardDto: CardDto,
-    @Param('columnId') columnId: string,
-    @Param('cardId') cardId: string,
-  ) {
+  @Patch('/card/:cardId')
+  async updateCard(@Body() cardDto: CardDto, @Param('cardId') cardId: string) {
     const updatedCard = await this.cardsService.updateCard(cardDto, +cardId);
 
     return { status: HttpStatus.OK, message: '카드 수정 성공', updatedCard };

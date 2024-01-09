@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Timestamp,
 } from 'typeorm';
 import { Card } from '../../cards/entities/card.entity';
 import { User } from '../../users/entities/user.entity';
@@ -26,5 +27,5 @@ export class Comment {
   text: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt: Timestamp;
 }

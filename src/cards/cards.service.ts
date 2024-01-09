@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CardDto } from 'src/auth/dto/card.dto';
+import { CardDto } from './dto/card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
 import { DataSource, QueryResult, Repository, getRepository } from 'typeorm';
@@ -12,6 +12,7 @@ import { BoardInvitation } from 'src/board-invitations/entities/board-invitation
 import { ColumnsService } from 'src/columns/columns.service';
 import { CardUser } from './entities/card_user.entity';
 import { filter } from 'lodash';
+import { Status } from './types/status.type';
 
 @Injectable()
 export class CardsService {
@@ -35,13 +36,27 @@ export class CardsService {
     }
   }
 
-  // 카드 조회
+  // 카드 목록 조회
   async getCards(columnId: number) {
     const cards = await this.cardsRepository.find({
       where: { column: { id: columnId } },
       order: { cardOrder: 'ASC' },
     });
     return cards;
+  }
+
+  // 카드 상세 조회
+  async getCardOne(cardId: number) {
+    const nowDate = new Date();
+    const card = await this.cardsRepository.findOne({ where: { id: cardId } });
+
+    if (card.dueDate.getTime() - nowDate.getTime() <= 0) {
+      await this.cardsRepository.update(cardId, { status: Status.OVERDUE });
+    } else if (card.status !== Status.COMPLETE) {
+      await this.cardsRepository.update(cardId, { status: Status.DUESOON });
+    }
+
+    return await this.cardsRepository.findOne({ where: { id: cardId } });
   }
 
   // 작업자 조회
@@ -124,6 +139,18 @@ export class CardsService {
         user: { id: filteredWorkers[i] },
       });
     }
+  }
+
+  // 마감 상태 변경
+  async updateStatus(cardId: number, status: any) {
+    const statusCard = await this.cardsRepository.findOne({
+      where: { id: cardId },
+    });
+
+    if (statusCard.status !== Status.COMPLETE) {
+      await this.cardsRepository.update(cardId, { status: status.status });
+    }
+    return;
   }
 
   // 카드 생성
