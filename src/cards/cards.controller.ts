@@ -24,14 +24,14 @@ export class CardsController {
   constructor(private cardsService: CardsService) {}
 
   // 카드 조회
-  @Get('/column/:columnId')
+  @Get('/column/:columnId/cards')
   async getCards(@Param('columnId') columnId: string) {
     const cards = await this.cardsService.getCards(+columnId);
     return { status: HttpStatus.OK, message: '카드 조회 성공', cards };
   }
 
   // 카드 생성
-  @Post('/column/:columnId')
+  @Post('/column/:columnId/card')
   async createCard(
     @Body() cardDto: CardDto,
     @Param('columnId') columnId: string,
@@ -41,7 +41,7 @@ export class CardsController {
   }
 
   // 카드 순서 변경
-  @Patch('/column/:columnId')
+  @Patch('/column/:columnId/cardOrder')
   async updateCardOrder(
     @Param('columnId') columnId: any,
     @Req() req,
@@ -55,11 +55,11 @@ export class CardsController {
   }
 
   // 카드 수정
-  @Patch('/column/:columnId')
+  @Patch('/column/:columnId/card/:cardId')
   async updateCard(
     @Body() cardDto: CardDto,
     @Param('columnId') columnId: string,
-    @Query('cardId') cardId: string,
+    @Param('cardId') cardId: string,
   ) {
     const updatedCard = await this.cardsService.updateCard(cardDto, +cardId);
 
@@ -67,7 +67,7 @@ export class CardsController {
   }
 
   // 카드 컬럼 간 이동
-  @Patch('/column/:columnId/card/:cardId')
+  @Patch('/column/:columnId/cardMove/:cardId')
   async moveCard(
     @Param('columnId') columnId: string,
     @Param('cardId') cardId: string,
@@ -82,10 +82,10 @@ export class CardsController {
   }
 
   // 카드 삭제
-  @Delete('/column/:columnId')
+  @Delete('/column/:columnId/card/:cardId')
   async deleteCard(
     @Param('columnId') columnId: string,
-    @Query('cardId') cardId: string,
+    @Param('cardId') cardId: string,
   ) {
     await this.cardsService.deleteCard(+cardId);
     return { status: HttpStatus.OK, message: '카드 삭제 성공' };
