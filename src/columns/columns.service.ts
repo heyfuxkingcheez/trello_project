@@ -24,20 +24,17 @@ export class ColumnsService {
     const existedColumn = await this.columnsRepository.findOne({
       where: { name: cardColumnDto.name, board: { id: boardId } },
     });
-    console.log(typeof boardId);
     if (existedColumn) {
       throw new ConflictException('이미 존재하는 컬럼명입니다');
     }
     const columnsList = await this.columnsRepository.find({
       where: { board: { id: boardId } },
+      order: { orderIndex: 'DESC' },
     });
     let maxIndex = 1;
-
-    if (columnsList && columnsList.length > 0) {
-      const getIndex = columnsList.map((column) => column.orderIndex);
-      maxIndex = Math.max(...getIndex) + 1;
+    if (columnsList.length > 0) {
+      maxIndex = columnsList[0].orderIndex + 1;
     }
-
     const createColumn = this.columnsRepository.create({
       name: cardColumnDto.name,
       board: { id: boardId },
@@ -50,12 +47,10 @@ export class ColumnsService {
   async getColumn(boardId: number) {
     const getColumns = await this.columnsRepository.find({
       where: { board: { id: boardId } },
+      order: { orderIndex: 'ASC' },
     });
 
-    const sortedColumns = getColumns.sort(
-      (a, b) => a.orderIndex - b.orderIndex,
-    );
-    return sortedColumns;
+    return getColumns;
   }
 
   // 컬럼 수정
@@ -68,7 +63,7 @@ export class ColumnsService {
       name: cardColumnDto.name,
     });
     existingColumn.name = cardColumnDto.name;
-    return existingColumn;
+    return await this.columnsRepository.save(existingColumn);
   }
 
   // 컬럼 삭제
@@ -91,57 +86,54 @@ export class ColumnsService {
     }
     const getColumns = await this.columnsRepository.find({
       where: { board: { id: boardId } },
+      order: { orderIndex: 'ASC' },
     });
-    const sortedColumns = getColumns.sort(
-      (a, b) => a.orderIndex - b.orderIndex,
-    );
-    console.log(sortedColumns);
-    const columnIndex = sortedColumns.findIndex(
+
+    const columnIndex = getColumns.findIndex(
       (column) => column.id === columnId,
     );
-    console.log(columnIndex);
-    console.log(typeof columnId);
+
     if (moveValue === 'LEFT') {
       if (columnIndex === 0) {
         throw new BadRequestException('더 이상 왼쪽으로 이동할 수 없습니다');
       } else {
-        const curIndex = sortedColumns[columnIndex].orderIndex;
+        const curIndex = getColumns[columnIndex].orderIndex;
 
-        const changeIndex = sortedColumns[columnIndex - 1].orderIndex;
+        const changeIndex = getColumns[columnIndex - 1].orderIndex;
 
         await this.columnsRepository.update(columnId, {
           orderIndex: changeIndex,
         });
 
-        await this.columnsRepository.update(sortedColumns[columnIndex - 1].id, {
+        await this.columnsRepository.update(getColumns[columnIndex - 1].id, {
           orderIndex: curIndex,
         });
-        const temp = sortedColumns[columnIndex];
-        sortedColumns[columnIndex] = sortedColumns[columnIndex - 1];
-        sortedColumns[columnIndex - 1] = temp;
+        const temp = getColumns[columnIndex];
+        getColumns[columnIndex] = getColumns[columnIndex - 1];
+        getColumns[columnIndex - 1] = temp;
 
-        return sortedColumns;
+        return getColumns;
       }
     } else if (moveValue === 'RIGHT') {
-      if (columnIndex === sortedColumns.length - 1) {
+      if (columnIndex === getColumns.length - 1) {
         throw new BadRequestException('더 이상 오른쪽으로 이동할 수 없습니다');
       } else {
-        const curIndex = sortedColumns[columnIndex].orderIndex;
+        const curIndex = getColumns[columnIndex].orderIndex;
 
-        const changeIndex = sortedColumns[columnIndex + 1].orderIndex;
+        const changeIndex = getColumns[columnIndex + 1].orderIndex;
 
         await this.columnsRepository.update(columnId, {
           orderIndex: changeIndex,
         });
 
-        await this.columnsRepository.update(sortedColumns[columnIndex + 1].id, {
+        await this.columnsRepository.update(getColumns[columnIndex + 1].id, {
           orderIndex: curIndex,
         });
 
-        const temp = sortedColumns[columnIndex];
-        sortedColumns[columnIndex] = sortedColumns[columnIndex + 1];
-        sortedColumns[columnIndex + 1] = temp;
-        return sortedColumns;
+        const temp = getColumns[columnIndex];
+        getColumns[columnIndex] = getColumns[columnIndex + 1];
+        getColumns[columnIndex + 1] = temp;
+        return getColumns;
       }
     }
   }
@@ -164,27 +156,33 @@ export class ColumnsService {
     try {
       const getColumns = await this.columnsRepository.find({
         where: { board: { id: boardId } },
+        order: { orderIndex: 'ASC' },
       });
+      if (getColumns.length !== cardMoveDragColumnDto.columnIndex.length) {
+        throw new BadRequestException('컬럼값을 모두 입력 해주세요');
+      }
+      const updatedColumns = [];
       cardMoveDragColumnDto.columnIndex.map((columnId, index) => {
         const existColumn = getColumns.find((column) => column.id === columnId);
         if (!existColumn) {
           throw new NotFoundException('존재하지 않은 columnId가 존재합니다');
         }
         existColumn.orderIndex = index + 1;
+        updatedColumns.push(existColumn);
+
         queryRunner.manager.update(CardColumn, columnId, {
           orderIndex: existColumn.orderIndex,
         });
       });
       await queryRunner.commitTransaction();
-      const sortedColumns = getColumns.sort(
-        (a, b) => a.orderIndex - b.orderIndex,
-      );
 
-      return sortedColumns;
+      return updatedColumns;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       if (error instanceof NotFoundException) {
         throw new NotFoundException('존재하지 않은 columnId가 존재합니다');
+      } else if (error instanceof BadRequestException) {
+        throw new BadRequestException('컬럼값을 모두 입력 해주세요');
       } else {
         throw new InternalServerErrorException('관리자에게 문의하십시오');
       }
