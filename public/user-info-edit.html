@@ -10,10 +10,16 @@
     <link rel="stylesheet" href="./css/loading.css" />
     <link rel="stylesheet" href="./css/header-footer.css" />
     <script type="module" defer src="./script/header-footer.js"></script>
-    <script defer src="./script/user-info-edit.js"></script>
+    <script type="module" defer src="./script/user-info-edit.js"></script>
   </head>
   <body class="bg-gray-50">
+    <!-- 로딩 표시기 -->
+    <div id="loading" class="loading-overlay hidden">
+      <div class="loading-spinner"></div>
+    </div>
+
     <div id="header"></div>
+
     <div class="min-h-screen flex items-center justify-center">
       <div
         class="w-2/6 bg-white p-6 rounded shadow-lg flex md:flex-row flex-col items-center justify-center"

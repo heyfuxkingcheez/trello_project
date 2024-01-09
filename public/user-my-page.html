@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/loading.css" />
+    <link rel="stylesheet" href="./css/header-footer.css" />
+    <script type="module" defer src="./script/header-footer.js"></script>
+    <script type="module" defer src="./script/user-my-page.js"></script>
+    <style>
+      /* MyBoard CSS */
+      .grid-cell {
+        width: 100px;
+        height: 100px;
+      }
+      .user-info,
+      .board-actions,
+      .board-tile {
+        border: 1px solid #000;
+      }
+      .user-info {
+        padding: 8px;
+      }
+      .board-actions button {
+        display: block;
+        margin: 5px;
+      }
+      .board-tile {
+        text-align: center;
+        padding-top: 35px;
+      }
+      .board-tile span {
+        display: block;
+      }
+
+      #body-second {
+        padding-top: 80px;
+        padding-bottom: 80px;
+      }
+    </style>
+  </head>
+  <body class="bg-white font-sans antialiased text-gray-900">
+    <!-- 로딩 표시기 -->
+    <div id="loading" class="loading-overlay hidden">
+      <div class="loading-spinner"></div>
+    </div>
+
+    <div id="header"></div>
+    <div id="body-second">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-6">
+          <div class="flex items-center">
+            <div
+              class="rounded-full overflow-hidden border-2 border-gray-300 mr-4"
+              style="width: 200px; height: 200px"
+            >
+              <img
+                id="user-image"
+                src=""
+                alt="Profile"
+                class="block object-cover"
+                style="width: 200px; height: 200px"
+              />
+            </div>
+            <!-- 이름 이메일 코멘트 -->
+            <div class="ml-10">
+              <div id="user-name" class="text-3xl font-semibold"></div>
+              <div
+                id="user-email"
+                class="mt-2 mb-2 text-xl text-gray-600"
+              ></div>
+              <div id="user-comment" class="text-xl text-gray-600"></div>
+            </div>
+          </div>
+          <div class="flex flex-col space-y-2">
+            <button class="bg-gray-200 text-gray-700 py-2 px-4 rounded">
+              새 보드 생성
+            </button>
+            <button
+              id="edit-profile-button"
+              class="bg-gray-200 text-gray-700 py-2 px-4 rounded"
+            >
+              개인 정보 수정
+            </button>
+            <button class="bg-gray-200 text-gray-700 py-2 px-4 rounded">
+              보드 초대 확인
+            </button>
+          </div>
+        </div>
+
+        <div class="text-2xl font-semibold mb-4">My Board</div>
+
+        <div class="flex flex-wrap -mx-2">
+          <div class="w-1/4 px-2 mb-4">
+            <div class="board-tile">
+              <span>trello</span>
+              <button
+                class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
+              >
+                초대
+              </button>
+              <button
+                class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="footer"></div>
+  </body>
+</html>

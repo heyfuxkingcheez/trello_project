@@ -1,4 +1,6 @@
 // public/script/user-info-edit.js
+import { showLoading, hideLoading } from './loading.js';
+
 // 페이지가 로드될 때 실행되는 함수
 window.onload = function () {
   fetchUserProfile();
@@ -18,8 +20,9 @@ function fetchUserProfile() {
       displayUserProfile(data);
     })
     .catch(function (error) {
+      alert('로그인이 필요한 서비스 입니다.');
+      window.location.href = '/user-login.html';
       console.error('프로필 정보 불러오기 실패:', error);
-      // 오류 처리
     });
 }
 
@@ -61,6 +64,7 @@ window.onload = function () {
 
 // 회원 정보 수정 요청 함수
 function updateProfile(event) {
+  showLoading();
   event.preventDefault();
 
   const currentPassword = document.getElementById('currentPassword').value;
@@ -85,10 +89,13 @@ function updateProfile(event) {
       },
     })
     .then((response) => {
-      console.log('회원 정보가 업데이트되었습니다.', response);
+      alert(response.data.message);
+      hideLoading();
       window.location.reload();
     })
     .catch((error) => {
+      alert(error.response.data.message);
+      hideLoading();
       console.error('회원 정보 업데이트 중 오류 발생', error);
     });
 }
