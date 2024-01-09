@@ -12,8 +12,6 @@ export class BoardInvitationsService {
     constructor( 
         @InjectRepository(Board)
         private readonly boardRepository: Repository<Board>,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
         @InjectRepository(BoardInvitation)
         private readonly invitationRepository: Repository<BoardInvitation>
     ) {}
@@ -72,7 +70,6 @@ export class BoardInvitationsService {
 
     async getInviteUserForBoard(boardId: number, userId: number) {
         //해당 보드 있는지 확인
-        console.log(boardId, userId);
         const board = await this.findBoard(boardId, userId);
         
         const invitedUser = await this.invitationRepository.findBy({
@@ -84,7 +81,6 @@ export class BoardInvitationsService {
 
     async updatedInvite(userId:number, updateInvitationDto, inviteId: number) {
         //승낙, 혹은 거절을 할 수 있음.
-
 
         //내가 초대된 것인지 확인.
         const invatation = await this.invitationRepository.findOne({where: {id:inviteId}});
