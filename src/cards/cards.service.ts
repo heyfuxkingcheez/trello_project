@@ -140,13 +140,13 @@ export class CardsService {
     cardId: number,
     destinationColumnId: number,
   ) {
-    // const existedCard = await this.cardsRepository.findOne({
-    //   where: { column: { id: columnId } },
-    // });
+    const existedCard = await this.cardsRepository.findOne({
+      where: { column: { id: columnId } },
+    });
 
-    // if (!existedCard) {
-    //   throw new NotFoundException('컬럼을 찾을 수 없습니다.');
-    // }
+    if (!existedCard) {
+      throw new NotFoundException('컬럼을 찾을 수 없습니다.');
+    }
 
     const updatedCard = await this.cardsRepository.update(cardId, {
       column: { id: destinationColumnId },

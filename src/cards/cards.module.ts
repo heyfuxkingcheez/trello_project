@@ -4,7 +4,6 @@ import { CardsService } from './cards.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
 import { ColumnsModule } from 'src/columns/columns.module';
-import { ColumnsService } from 'src/columns/columns.service';
 import { CardColumn } from 'src/columns/entities/column.entity';
 import { BoardInvitation } from 'src/board-invitations/entities/board-invitation.entity';
 
@@ -15,5 +14,6 @@ import { BoardInvitation } from 'src/board-invitations/entities/board-invitation
   ],
   controllers: [CardsController],
   providers: [CardsService],
+  exports: [CardsService],
 })
 export class CardsModule {}
