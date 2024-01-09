@@ -14,7 +14,7 @@ Content-Type: application/json
 
 ###
 # 댓글 등록
-POST {{domain}}/board/1/card/13
+POST {{domain}}/board/1/card/13/comment
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -24,7 +24,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 별 댓글 조회
-GET {{domain}}/board/1/card/13
+GET {{domain}}/board/1/card/13/comment
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 

@@ -29,7 +29,7 @@ export class CommentsController {
     private commentsService: CommentsService,
   ) {}
   // 댓글 생성
-  @Post('/:boardId/card/:cardId')
+  @Post('/:boardId/card/:cardId/comment')
   async createCard(
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
@@ -47,7 +47,7 @@ export class CommentsController {
   }
 
   // 카드별 댓글 조회
-  @Get('/:boardId/card/:cardId')
+  @Get('/:boardId/card/:cardId/comment')
   async getComments(
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
