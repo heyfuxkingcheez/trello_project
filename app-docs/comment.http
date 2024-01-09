@@ -1,0 +1,35 @@
+@domain = http://localhost:3000
+@AccessToken = {{loginToken.response.body.$.access_token}}
+
+###
+# 사용자 로그인
+# @name loginToken
+POST {{domain}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "password": "123qweQWE!"
+}
+
+###
+# 댓글 등록
+POST {{domain}}/board/1/card/13
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "text": "안녕하세요!"
+}
+
+###
+# 카드 별 댓글 조회
+GET {{domain}}/board/1/card/13
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+###
+# 댓글 삭제
+DELETE {{domain}}/board/1/card/13/comment/1
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
