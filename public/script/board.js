@@ -200,6 +200,20 @@ function rightColumn(columnId) {
     });
 }
 
+// 카드 상세 보기
+function detailCard(cardId) {
+  console.log(cardId);
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .get(`/board/${boardId}/card/${cardId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    .then(() => {})
+    .catch(() => {});
+}
+
 // 카드 삭제
 function deleteCard(cardId, columnId) {
   console.log(cardId, columnId);
