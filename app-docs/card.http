@@ -38,7 +38,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 수정
-PATCH {{domain}}/board/1/card/21/
+PATCH {{domain}}/board/1/card/21
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -87,7 +87,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드에 속한 작업자 조회
-GET {{domain}}/board/1/worker
+GET {{domain}}/board/1/card/21/worker
 Authorization: Bearer {{AccessToken}}
 
 ### 
@@ -102,7 +102,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드의 작업자 삭제
-DELETE {{domain}}/board/1/card/13/worker
+DELETE {{domain}}/board/1/card/21/worker
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 

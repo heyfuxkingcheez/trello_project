@@ -12,7 +12,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { CardDto } from './dto/card.dto';
+import { CardDto } from 'src/auth/dto/card.dto';
 import { CardsService } from './cards.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
@@ -60,6 +60,13 @@ export class CardsController {
       message: '작업자 조회 성공',
       existedWokerAtBoard,
     };
+  }
+
+  // 할당된 작업자 조회
+  @Get('/card/:cardId/worker')
+  async getCardWorker(@Param('cardId') cardId: string) {
+    const worker = await this.cardsService.getCardWorker(+cardId);
+    return { status: HttpStatus.OK, message: '작업자 조회', worker };
   }
 
   // 작업자 할당
