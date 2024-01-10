@@ -312,7 +312,7 @@ function displayInvitedBoard(invite) {
   if (invite.length === 0) {
     const invitedElement = document.createElement('div');
     invitedElement.innerHTML = `
-    <div class="board-tile m-2 w-64 h-auto" style="border: 1px solid">
+    <div class="board-tile m-2 w-64 h-auto mx-auto" style="border: 1px solid">
       <span class="mb-3">현재 초대받은 보드가 없습니다.</span>
     </div>
     `;
@@ -323,7 +323,7 @@ function displayInvitedBoard(invite) {
     const invitedElement = document.createElement('div');
     invitedElement.className = 'invitedGet';
     invitedElement.innerHTML = `
-      <div class="board-tile m-2 w-64 h-auto" style="border: 1px solid">
+      <div class="board-tile m-2 w-64 h-auto mx-auto" style="border: 1px solid">
         <span class="mb-3">${invite.board_name}</span>
         <span class="mb-3">${invite.board_owner}</span>
         <span class="mb-3">${invite.board_description}</span>
