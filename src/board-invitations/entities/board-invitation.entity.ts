@@ -14,14 +14,14 @@ export class BoardInvitation {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column({ type: 'int', nullable: false })
   user_id: number;
 
-  @ManyToOne(() => Board)
+  @ManyToOne(() => Board, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 

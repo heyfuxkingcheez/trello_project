@@ -123,10 +123,12 @@ function displayBoards(boards) {
     boardElement.className = 'boardGet';
     boardElement.innerHTML = `
       <div class="board-tile m-2 w-64 h-auto" style="border: 1px solid ${board.backgroundColor}">
-        <span class="mb-3">${board.name}</span>
-        <span class="mb-3">${board.description}</span>
+        <div class="move-board-detail">
+          <span class="mb-3">${board.name}</span>
+          <span class="mb-3">${board.description}</span>
+        </div>
         <div class="board-button mb-3">
-          <button class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow">초대</button>
+          <button class="invite-button bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow">초대</button>
           <button class="edit-button bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow">수정</button>
           <button class="delete-button bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow">삭제</button>
         </div>
@@ -134,13 +136,16 @@ function displayBoards(boards) {
     `;
     boardsContainer.appendChild(boardElement);
 
+    const inviteButton = boardElement.querySelector('.invite-button');
+    inviteButton.addEventListener('click', () => openinviteModal(board));
+
     const editButton = boardElement.querySelector('.edit-button');
     editButton.addEventListener('click', () => openEditModal(board));
 
     const deleteButton = boardElement.querySelector('.delete-button');
     deleteButton.addEventListener('click', () => deleteBoard(board.id));
 
-    const boardTile = boardElement.querySelector('.board-tile');
+    const boardTile = boardElement.querySelector('.move-board-detail');
     boardTile.addEventListener('click', () => fetchBoardDetails(board.id));
   });
 }
@@ -220,5 +225,176 @@ function deleteBoard(boardId) {
     .catch((error) => {
       alert(error.response.data.message);
       console.error('Error:', error);
+    });
+}
+
+//각 보드에 초대하기 초대하면 초대하는 유저 입력할 수 있는 모달창이 뜬다.
+function openinviteModal(board) {
+  const invitedForm = document.getElementById('create-invite-board-form');
+  invitedForm.onsubmit = (e) => submitInvitedForm(e, board.id);
+  document
+    .getElementById('create-invite-board-modal')
+    .classList.remove('hidden');
+}
+
+// 모달 닫기
+document
+  .getElementById('invite-board-close-modal')
+  .addEventListener('click', function () {
+    document
+      .getElementById('create-invite-board-modal')
+      .classList.add('hidden');
+  });
+
+function submitInvitedForm(event, board_id) {
+  event.preventDefault();
+
+  const email = document.getElementById('create-invite-board-email').value;
+
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .post(
+      `/board-invitations`,
+      { email, board_id },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then(() => {
+      alert('초대 완료');
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+
+// 내 초대확인 모달 열기
+document
+  .getElementById('open-view-invited-modal')
+  .addEventListener('click', function () {
+    document.getElementById('view-invited-modal').classList.remove('hidden');
+    //displayInvitedBoard 실행
+    const accessToken = localStorage.getItem('access_token');
+    axios
+      .get('/board-invitations', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const invitations = response.data;
+        displayInvitedBoard(invitations);
+        hideLoading();
+      })
+      .catch((error) => {
+        alert(`실패하였습니다..  ${error}`);
+        window.location.href = '/user-my-page.html';
+        console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
+        hideLoading();
+        // 오류 처리
+      });
+  });
+
+// 모달 닫기
+document
+  .getElementById('invited-close-modal')
+  .addEventListener('click', function () {
+    document.getElementById('view-invited-modal').classList.add('hidden');
+  });
+
+function displayInvitedBoard(invite) {
+  console.log(invite);
+  const invitedContainer = document.getElementById('view-invited-board');
+  invitedContainer.innerHTML = ''; // 기존 보드 데이터 제거
+
+  if (invite.length === 0) {
+    const invitedElement = document.createElement('div');
+    invitedElement.innerHTML = `
+    <div class="board-tile m-2 w-64 h-auto mx-auto" style="border: 1px solid">
+      <span class="mb-3">현재 초대받은 보드가 없습니다.</span>
+    </div>
+    `;
+    invitedContainer.appendChild(invitedElement);
+  }
+  invite.forEach((invite) => {
+    console.log(invite);
+    const invitedElement = document.createElement('div');
+    invitedElement.className = 'invitedGet';
+    invitedElement.innerHTML = `
+      <div class="board-tile m-2 w-64 h-auto mx-auto" style="border: 1px solid">
+        <span class="mb-3">${invite.board_name}</span>
+        <span class="mb-3">${invite.board_owner}</span>
+        <span class="mb-3">${invite.board_description}</span>
+        <div class="invited-button mb-3">
+          <button class="accept-button bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow">수락</button>
+          <button class="decline-button bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow">거절</button>
+        </div>
+      </div>
+    `;
+    invitedContainer.appendChild(invitedElement);
+
+    const acceptButton = invitedElement.querySelector('.accept-button');
+    acceptButton.addEventListener('click', () => {
+      accepteInvite(invite.id);
+      document.getElementById('view-invited-modal').classList.add('hidden');
+    });
+
+    const declineButton = invitedElement.querySelector('.decline-button');
+    declineButton.addEventListener('click', () => {
+      declineInvite(invite.id);
+      document.getElementById('view-invited-modal').classList.add('hidden');
+    });
+  });
+}
+
+//승낙버튼 눌렀을때
+function accepteInvite(invitedId) {
+  //
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .patch(
+      `/board-invitations/${invitedId}`,
+      { status: 'accepted' },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then((response) => {
+      alert(`초대에 승낙하였습니다.`);
+      window.location.href = '/user-my-page.html';
+      hideLoading();
+    })
+    .catch((error) => {
+      alert(`실패하였습니다..  ${error}`);
+      window.location.href = '/user-my-page.html';
+      console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
+      hideLoading();
+      // 오류 처리
+    });
+}
+//거절버튼 눌렀을때
+function declineInvite(invitedId) {
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .patch(
+      `/board-invitations/${invitedId}`,
+      { status: 'declined' },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then((response) => {
+      alert(`초대를 거절하였습니다.`);
+      window.location.href = '/user-my-page.html';
+      hideLoading();
+    })
+    .catch((error) => {
+      alert(`실패하였습니다..  ${error}`);
+      window.location.href = '/user-my-page.html';
+      console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
+      hideLoading();
+      // 오류 처리
     });
 }

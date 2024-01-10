@@ -15,11 +15,11 @@ export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Card)
+  @ManyToOne(() => Card, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'card_id' })
   card: Card;
 
