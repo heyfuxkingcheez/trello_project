@@ -147,8 +147,6 @@ function addEventListenerColumnList() {
       const columnId = event.target.dataset.cardDetailColumnId;
       const cardColor = event.target.dataset.cardDetailColor;
       console.log(cardId, columnId, cardColor);
-      document.getElementById('detailCardModal').style.display = 'flex';
-      detailCard(cardId);
     } else if (targetId.indexOf('leftColumnId') != -1) {
       const columnId = targetId.replace('leftColumnId', '');
       leftColumn(columnId);
@@ -202,80 +200,6 @@ function rightColumn(columnId) {
     });
 }
 
-// 카드 상세 보기
-function detailCard(cardId) {
-  showLoading();
-  const urlParams = new URLSearchParams(window.location.search);
-  const boardId = urlParams.get('boardId');
-  const accessToken = localStorage.getItem('access_token');
-
-  axios
-    .get(`/board/${boardId}/card/${cardId}`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-    .then((response) => {
-      const data = response.data;
-      console.log(data.card);
-      const cardDetail = document.getElementById(`detailCardForm`);
-      cardDetail.innerHTML = '';
-
-      let cardDetailHtml = `
-      <div id="card-color${data.card.id}" class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">카드 색상</label>
-      <input type="color" id="detailCardColor" value="${data.card.color}" class="shadow border rounded py-2 px-3 w-full" />
-    </div>
-
-    <div id="card-name${data.card.id}" class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">작성자</label>
-      <p id="detailCardName" class="shadow border rounded py-2 px-3 w-full">${data.card.name}</p>
-    </div>
-    <div id="card-content${data.card.id}" class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">카드 내용</label>
-      <input id="detailCardDescription" value="${data.card.description}" class="shadow border rounded py-2 px-3 w-full"></input>
-    </div>
-    <div id="card-worker${data.card.id}" class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">작업자</label>
-      <input id="detailCardDate" type="radio" class="shadow border rounded py-2 px-3 w-full" />
-    </div>
-    <div id="card-deadline${data.card.id}" class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">마감 기한 </label><span>${data.card.status}</span>
-      <input id="detailCardWorker" value="${data.card.dueDate}" type="datetime-local" class="shadow border rounded py-2 px-3 w-full" />
-    </div>
-    
-    <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      id="cardDetailEditBtn${data.card.id}">
-      수정
-    </button>
-    <button id="cardDetailModalCloseBtn${data.card.id}" type="button"
-      class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-      닫기
-    </button>
-              `;
-      hideLoading();
-      cardDetail.innerHTML += cardDetailHtml;
-    })
-    .catch((error) => {
-      alert(error.response.data.message);
-      console.error('Error:', error);
-    });
-  setTimeout(() => {
-    const cardDetailModalCloseBtn = document.getElementById(
-      `cardDetailModalCloseBtn${cardId}`,
-    );
-    cardDetailModalCloseBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      document.getElementById(`detailCardModal`).style.display = 'none';
-    });
-    const cardDetailModalEditBtn = document.getElementById(
-      `cardDetailEditBtn${cardId}`,
-    );
-    cardDetailModalEditBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      console.log(`수정 클릭 ==> ${cardId}`);
-    });
-  }, 100);
-}
-
 // 카드 삭제
 function deleteCard(cardId, columnId) {
   console.log(cardId, columnId);
@@ -290,7 +214,7 @@ function deleteCard(cardId, columnId) {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
     .then(() => {
-      alert('카드 삭제 완료');
+      alert('컬럼 삭제 완료');
       window.location.reload();
     })
     .catch((error) => {
@@ -441,3 +365,10 @@ document
         document.getElementById('addColumnName').value = '';
       });
   });
+
+//모달창으로 어떤 user 이름 입력 받기
+function boardInvite() {
+  //이름을 user id로 변환? 아니면 api에서 userid가 아닌 username으로 받을 수 있게?
+}
+//board에 초대
+function inviteUser(boardId, userId) {}
