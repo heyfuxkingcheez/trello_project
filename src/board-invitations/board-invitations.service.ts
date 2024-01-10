@@ -41,7 +41,11 @@ export class BoardInvitationsService {
         const invitedUser = await this.userRepository.findOne({
             where: {email: invitationDto.email,}
         })
-        
+
+        if(!invitedUser){
+            throw new BadRequestException('없는 사용자입니다.');
+        }
+
         //이미 초대한 경우
         const findInvitation = await this.invitationRepository.findBy({
             user_id: invitedUser.id,
