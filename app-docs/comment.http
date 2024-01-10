@@ -24,7 +24,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 별 댓글 조회
-GET {{domain}}/board/1/card/13/comment
+GET {{domain}}/board/1/card/24/comment
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
