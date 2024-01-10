@@ -94,10 +94,18 @@ function logoutUser() {
 }
 
 // JWT 토큰 파싱 함수
+// function parseJwt(token) {
+//   let base64Payload = token.split('.')[1];
+//   let payload = atob(base64Payload);
+//   return JSON.parse(payload);
+// }
+
 function parseJwt(token) {
   let base64Payload = token.split('.')[1];
   let payload = atob(base64Payload);
-  return JSON.parse(payload);
+  let parsedPayload = JSON.parse(payload);
+  console.log('Parsed Token Payload:', parsedPayload);
+  return parsedPayload;
 }
 
 // 토큰 유효시간 확인 및 카운트다운 시작 함수
