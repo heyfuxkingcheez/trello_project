@@ -26,6 +26,7 @@ export class BoardInvitationGuard implements CanActivate {
     const existingBoard = await this.boardRepository.findOne({
       where: { id: boardId },
     });
+
     if (!existingBoard) {
       throw new NotFoundException('보드를 찾을 수 없습니다.');
     }
@@ -37,9 +38,14 @@ export class BoardInvitationGuard implements CanActivate {
         board: { id: boardId },
       },
     });
+    const isCreatorId = await this.boardRepository.findOne({
+      where: { creator_id: userId },
+    });
 
-    if (!existedUser) {
-      throw new UnauthorizedException('조작할 권한이 없습니다.');
+    if (!isCreatorId) {
+      if (!existedUser) {
+        throw new UnauthorizedException('조작할 권한이 없습니다.');
+      }
     }
 
     return true;
