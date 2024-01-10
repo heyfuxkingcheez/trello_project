@@ -36,3 +36,7 @@ lerna-debug.log*
 
 # 환경변수
 .env
+
+# 로컬 인증서
+cert.pem
+key.pem

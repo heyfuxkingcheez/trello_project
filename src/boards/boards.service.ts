@@ -27,7 +27,9 @@ export class BoardsService {
             creator_id: userId
         });
 
-        return createdBoard.id;
+        return {
+            id:createdBoard.id
+        }
 
     }
 
