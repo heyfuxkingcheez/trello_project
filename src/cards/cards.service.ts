@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CardDto } from './dto/card.dto';
+import { CardDto } from 'src/auth/dto/card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
-import { DataSource, QueryResult, Repository, getRepository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CardColumn } from 'src/columns/entities/column.entity';
 import { BoardInvitation } from 'src/board-invitations/entities/board-invitation.entity';
 import { ColumnsService } from 'src/columns/columns.service';
@@ -69,9 +69,21 @@ export class CardsService {
       },
     });
     let wokers: any = getCardUsers.map((user) => user.id);
-    console.log('작업자들: ', wokers);
+    console.log('초대자들: ', wokers);
 
     return wokers;
+  }
+
+  // 할당된 작업자 조회
+  async getCardWorker(cardId: number) {
+    const getCardWorker = await this.cardUserRepository.find({
+      where: { card: { id: cardId } },
+      relations: ['user'],
+    });
+
+    let workers: any = getCardWorker.map((worker) => worker.user);
+    console.log('작업자들', workers);
+    return workers;
   }
 
   // 작업자 할당
@@ -82,6 +94,7 @@ export class CardsService {
     selectedWoker: any,
   ) {
     console.log(cardId, userId, boardId);
+    await this.existedCard(cardId);
     // 보드에 초대된 사용자들 찾기
     const workers = await this.getWorker(userId, boardId);
     // 선택된 사용자들
@@ -122,6 +135,7 @@ export class CardsService {
     boardId: number,
     userId: number,
   ) {
+    await this.existedCard(cardId);
     const workers = await this.getWorker(userId, boardId);
     const selectWorker = selectedWorker.map((worker) => worker.selectedWorker);
     const filteredWorkers = selectWorker.filter((worker) =>

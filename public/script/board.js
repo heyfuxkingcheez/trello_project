@@ -1,5 +1,4 @@
 // public/script/user-info-edit.js
-
 import { showLoading, hideLoading } from './loading.js';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -83,10 +82,11 @@ function fetchColums(boardId) {
             cardList.innerHTML = '';
 
             cardResponse.data.cards.forEach((card) => {
+              const formattedDueDate = card.dueDate.slice(0, 19);
               let cardHtml = `
                 <div class="card" draggable="true"  style="border: 4px solid ${card.color}">
                   <strong> ${card.name}</strong><br />
-                  <span class="due-date">마감일: ${card.dueDate}</span><br />
+                  <span class="due-date">마감일: ${formattedDueDate}</span><br />
               
                   <button
                     class="card-detail-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
@@ -147,6 +147,8 @@ function addEventListenerColumnList() {
       const columnId = event.target.dataset.cardDetailColumnId;
       const cardColor = event.target.dataset.cardDetailColor;
       console.log(cardId, columnId, cardColor);
+      document.getElementById('detailCardModal').style.display = 'flex';
+      detailCard(cardId);
     } else if (targetId.indexOf('leftColumnId') != -1) {
       const columnId = targetId.replace('leftColumnId', '');
       leftColumn(columnId);
@@ -192,6 +194,149 @@ function rightColumn(columnId) {
     )
     .then(() => {
       alert('컬럼 오른쪽으로 이동 완료');
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+
+// 카드 상세 보기
+function detailCard(cardId) {
+  showLoading();
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+
+  axios
+    .get(`/board/${boardId}/card/${cardId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    .then((response) => {
+      const data = response.data;
+      console.log(data.card);
+      const cardDetail = document.getElementById(`detailCardModal`);
+      const formattedDueDate = data.card.dueDate.slice(0, 19);
+      console.log(formattedDueDate);
+
+      cardDetail.innerHTML = '';
+
+      let cardDetailHtml = `
+      <div class="modal-content" id="detailCard" style="border: 4px solid ${data.card.color}">
+        <form id="detailCardForm">
+      <div id="card-color${data.card.id}" class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">카드 색상</label>
+      <input type="color" id="detailCardColor${data.card.id}" value="${data.card.color}" class="shadow border rounded py-2 px-3 w-full" />
+    </div>
+
+    <div id="card-name${data.card.id}" class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">작성자</label>
+      <p id="detailCardName${data.card.id}" class="shadow border rounded py-2 px-3 w-full">${data.card.name}</p>
+    </div>
+    <div id="card-content${data.card.id}" class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">카드 내용</label>
+      <input id="detailCardDescription${data.card.id}" value="${data.card.description}" class="shadow border rounded py-2 px-3 w-full"></input>
+    </div>
+    <div id="card-worker${data.card.id}" class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2">작업자</label>
+    <div id="worker${data.card.id}">
+    </div>
+    </.div>
+    <div id="card-deadline${data.card.id}" class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">마감 기한 </label><span>${data.card.status}</span>
+      <input id="detailCardDeadLine${data.card.id}" value="${formattedDueDate}" type="datetime-local" class="shadow border rounded py-2 px-3 w-full" />
+    </div>
+    
+    <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="cardDetailEditBtn${data.card.id}">
+      수정
+    </button>
+    <button id="cardDetailModalCloseBtn${data.card.id}" type="button"
+      class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+      닫기
+    </button>
+    </form>
+      </div>
+              `;
+      hideLoading();
+      cardDetail.innerHTML += cardDetailHtml;
+
+      axios
+        .get(`board/${boardId}/card/${cardId}/worker`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((response) => {
+          const workers = response.data.worker;
+          console.log(workers);
+          const cardDetailWorker = document.getElementById(`worker${cardId}`);
+          cardDetailWorker.innerHTML = '';
+
+          workers.forEach((worker) => {
+            let cardDetailHtml = `
+            <span id="detailCardWorker${worker.id}" class="shadow border rounded py-2 px-3 w-full">${worker.username}</span>`;
+
+            cardDetailWorker.innerHTML += cardDetailHtml;
+          });
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+          console.error('Error:', error);
+        });
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+  setTimeout(() => {
+    const cardDetailModalCloseBtn = document.getElementById(
+      `cardDetailModalCloseBtn${cardId}`,
+    );
+    cardDetailModalCloseBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      document.getElementById(`detailCardModal`).style.display = 'none';
+    });
+    const cardDetailModalEditBtn = document.getElementById(
+      `cardDetailEditBtn${cardId}`,
+    );
+    cardDetailModalEditBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      console.log(`수정 클릭 ==> ${cardId}`);
+      const color = document.getElementById(`detailCardColor${cardId}`).value;
+      const description = document.getElementById(
+        `detailCardDescription${cardId}`,
+      ).value;
+      const dueDate = document.getElementById(
+        `detailCardDeadLine${cardId}`,
+      ).value;
+      console.log('컬러', color);
+      console.log('내용', description);
+      console.log('마감기한', dueDate);
+
+      editCard(boardId, cardId, color, description, dueDate);
+    });
+  }, 100);
+}
+
+// 카드 수정
+function editCard(boardId, cardId, color, description, dueDate) {
+  showLoading();
+  console.log('잘 들어옴', color);
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .patch(
+      `/board/${boardId}/card/${cardId}`,
+      {
+        description: description,
+        color: color,
+        dueDate: dueDate,
+      },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then((response) => {
+      alert(response.data.message);
       window.location.reload();
     })
     .catch((error) => {
@@ -365,10 +510,3 @@ document
         document.getElementById('addColumnName').value = '';
       });
   });
-
-//모달창으로 어떤 user 이름 입력 받기
-function boardInvite() {
-  //이름을 user id로 변환? 아니면 api에서 userid가 아닌 username으로 받을 수 있게?
-}
-//board에 초대
-function inviteUser(boardId, userId) {}
