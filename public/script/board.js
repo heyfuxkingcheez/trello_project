@@ -365,3 +365,10 @@ document
         document.getElementById('addColumnName').value = '';
       });
   });
+
+//모달창으로 어떤 user 이름 입력 받기
+function boardInvite() {
+  //이름을 user id로 변환? 아니면 api에서 userid가 아닌 username으로 받을 수 있게?
+}
+//board에 초대
+function inviteUser(boardId, userId) {}
