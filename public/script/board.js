@@ -1,4 +1,5 @@
 // public/script/user-info-edit.js
+
 import { showLoading, hideLoading } from './loading.js';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -8,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const color = urlParams.get('color');
   const description = urlParams.get('description');
   document.title = name;
-  document.body.style.backgroundColor = color;
   document.getElementById('boardTitle').innerHTML = `${name} - ${description}`;
+  document.getElementById('boardTitle').style.color = color;
   fetchColums(boardId);
 });
 
@@ -45,41 +46,83 @@ function fetchColums(boardId) {
             </button>
           </div>
         </div>
-        <div class="cardList">
-          <div class="card" draggable="true">
-            <strong>asd</strong><br /><span class="due-date">2024-01-02</span
-            ><br /><span class="priority">high</span><br /><span
-              class="content"
-              >asd</span
-            ><br /><button
-              class="edit-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
-              type="button" >
-              수정</button
-            ><button
-              class="delete-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
-              type="button" >
-              삭제
-            </button>
-          </div>
+        <div class="cardList" id="cardListId${column.id}">
         </div>
+        <div class="flex-container">
         <div class="centered-content">
-          <div class="plus-sign">+ Add Card</div>
+          <div class="plus-sign" id="addCardBtnId${column.id}">+ Add Card</div>
         </div>
+        <div class="button-container">
+          <button
+            type="button"
+            class="leftColumnButton bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
+            id="leftColumnId${column.id}">
+            <
+          </button>
+          <button
+            type="button"
+            class="rightColumnButton bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
+            id="rightColunmId${column.id}">
+            >
+          </button>
+        </div>
+      </div>
       </div>
             `;
 
         columnsList.innerHTML += columnHtml;
+
+        axios
+          .get(`/board/${boardId}/column/${column.id}/cards`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            },
+          })
+          .then((cardResponse) => {
+            const cardList = document.getElementById(`cardListId${column.id}`);
+            cardList.innerHTML = '';
+
+            cardResponse.data.cards.forEach((card) => {
+              let cardHtml = `
+                <div class="card" draggable="true"  style="border: 4px solid ${card.color}">
+                  <strong> ${card.name}</strong><br />
+                  <span class="due-date">마감일: ${card.dueDate}</span><br />
+              
+                  <button
+                    class="card-detail-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
+                    type="button"
+                    data-card-detail-column-id="${column.id}"
+                    data-card-detail-color="${card.color}"
+                    id="cardDetailId${card.id}">
+                    상세보기
+                  </button>
+                  <button
+                    class="delete-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
+                    type="button"
+                    data-delete-card-column-id="${column.id}"
+                    id="deleteCardId${card.id}">
+                   삭제
+                  </button>
+                </div>
+              `;
+
+              cardList.innerHTML += cardHtml;
+            });
+          })
+          .catch((error) => {
+            alert(error.response.data.message);
+          });
       });
+      addEventListenerColumnList();
 
       hideLoading();
-      deleteAddEventListeners();
     })
     .catch((error) => {
       alert(error.response.data.message);
     });
 }
 // columnList에 클릭 이벤트 할당
-function deleteAddEventListeners() {
+function addEventListenerColumnList() {
   const columnsList = document.getElementById('columnList');
 
   columnsList.addEventListener('click', function (event) {
@@ -91,18 +134,144 @@ function deleteAddEventListeners() {
       const columnId = targetId.replace('editColunmId', '');
       document.getElementById('editColumnModal').style.display = 'flex';
       editColumn(columnId);
+    } else if (targetId.indexOf('addCardBtnId') != -1) {
+      const columnId = targetId.replace('addCardBtnId', '');
+      document.getElementById('addCardModal').style.display = 'flex';
+      addCard(columnId);
+    } else if (targetId.indexOf('deleteCardId') != -1) {
+      const cardId = targetId.replace('deleteCardId', '');
+      const columnId = event.target.dataset.deleteCardColumnId;
+      deleteCard(cardId, columnId);
+    } else if (targetId.indexOf('cardDetailId') != -1) {
+      const cardId = targetId.replace('cardDetailId', '');
+      const columnId = event.target.dataset.cardDetailColumnId;
+      const cardColor = event.target.dataset.cardDetailColor;
+      console.log(cardId, columnId, cardColor);
+    } else if (targetId.indexOf('leftColumnId') != -1) {
+      const columnId = targetId.replace('leftColumnId', '');
+      leftColumn(columnId);
+    } else if (targetId.indexOf('rightColunmId') != -1) {
+      const columnId = targetId.replace('rightColunmId', '');
+      rightColumn(columnId);
     }
   });
 }
-// edit 모달창
+// 컬럼 이동
+function leftColumn(columnId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .patch(
+      `/board/${boardId}/column/moveBtn/${columnId}`,
+      { moveBtn: 'left' },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then(() => {
+      alert('컬럼 왼쪽으로 이동 완료');
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+function rightColumn(columnId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .patch(
+      `/board/${boardId}/column/moveBtn/${columnId}`,
+      { moveBtn: 'right' },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then(() => {
+      alert('컬럼 오른쪽으로 이동 완료');
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+
+// 카드 삭제
+function deleteCard(cardId, columnId) {
+  console.log(cardId, columnId);
+  if (!confirm('이 카드을 삭제하시겠습니까?')) {
+    return;
+  }
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .delete(`/board/${boardId}/column/${columnId}/card/${cardId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    .then(() => {
+      alert('컬럼 삭제 완료');
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+// 카드 add 모달창
+function addCard(columnId) {
+  const addCardName = document.getElementById('addCardName');
+  const addCardDescription = document.getElementById('addCardDescription');
+  const addCardColor = document.getElementById('addCardColor');
+  const addCardDate = document.getElementById('addCardDate');
+  const addCardBtn = document.getElementById('addCardBtn');
+  const addCardModalCloseBtn = document.getElementById('addCardModalCloseBtn');
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  addCardBtn.addEventListener('click', function (event) {
+    event.preventDefault();
+    const accessToken = localStorage.getItem('access_token');
+    axios
+      .post(
+        `/board/${boardId}/column/${columnId}/card`,
+        {
+          name: addCardName.value,
+          description: addCardDescription.value,
+          color: addCardColor.value,
+          dueDate: addCardDate.value,
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      )
+      .then((response) => {
+        alert(response.data.message);
+        window.location.reload();
+      })
+      .catch((error) => {
+        alert(error.response.data.message);
+        console.error('Error:', error);
+      });
+  });
+  addCardModalCloseBtn.addEventListener('click', function (event) {
+    event.preventDefault();
+    document.getElementById('addCardModal').style.display = 'none';
+    addCardName.value = '';
+    addCardDescription.value = '';
+    addCardColor.value = '';
+  });
+}
+// 컬럼 edit 모달창
 function editColumn(columnId) {
   const inputField = document.getElementById('editColumnName');
   const editBtn = document.getElementById('editColumnBtn');
   const closeBtn = document.getElementById('editColumnModalCloseBtn');
   editBtn.addEventListener('click', function (event) {
     event.preventDefault();
-    console.log(typeof inputField.value);
-    console.log(columnId);
     const accessToken = localStorage.getItem('access_token');
     axios
       .patch(
@@ -148,7 +317,7 @@ function deleteColumn(columnId) {
       console.error('Error:', error);
     });
 }
-// add 모달창열기
+// 컬럼 add 모달창열기
 document
   .getElementById('addColumn')
   .addEventListener('click', function (event) {
@@ -156,7 +325,7 @@ document
     addColumnModal.style.display = 'flex';
   });
 
-// add 모달창 닫기
+// 컬럼 add 모달창 닫기
 document
   .getElementById('addColumnModalCloseBtn')
   .addEventListener('click', function (event) {
@@ -196,3 +365,10 @@ document
         document.getElementById('addColumnName').value = '';
       });
   });
+
+//모달창으로 어떤 user 이름 입력 받기
+function boardInvite() {
+  //이름을 user id로 변환? 아니면 api에서 userid가 아닌 username으로 받을 수 있게?
+}
+//board에 초대
+function inviteUser(boardId, userId) {}

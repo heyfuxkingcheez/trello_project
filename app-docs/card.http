@@ -19,7 +19,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 상세 조회
-GET {{domain}}/board/1/card/20
+GET {{domain}}/board/1/card/21
 Authorization: Bearer {{AccessToken}}
 
 
@@ -38,7 +38,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 수정
-PATCH {{domain}}/board/1/card/20/
+PATCH {{domain}}/board/1/card/21/
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -92,7 +92,7 @@ Authorization: Bearer {{AccessToken}}
 
 ### 
 # 카드에 작업자 할당
-POST {{domain}}/board/1/card/13/worker
+POST {{domain}}/board/1/card/21/worker
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
