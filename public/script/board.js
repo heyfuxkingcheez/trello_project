@@ -306,8 +306,8 @@ function detailCard(cardId) {
           data.forEach((comment) => {
             console.log(comment);
             let commentHtml = `
-            <span>${comment.user.username}</span>  <span>${comment.createdAt}</span>
-            <p>${comment.text}</p>
+            <span>${comment.user.username}</span>  <span>${comment.createdAt}</span> <button class="deleteColumnButton bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow" id="deleteCommentId${cardId}">삭제</button>
+            <p>${comment.text}</p><span style="display: none;" data-card-detail="${comment.id}" id="commentId"></span>
             `;
             cardDetailComment.innerHTML += commentHtml;
           });
@@ -354,6 +354,14 @@ function detailCard(cardId) {
       console.log('댓글 등록 버튼!', cardId);
       const text = document.getElementById(`detailCardComment${cardId}`).value;
       commentCard(boardId, cardId, text);
+    });
+    const commentDeleteBtn = document.getElementById(
+      `deleteCommentId${cardId}`,
+    );
+    commentDeleteBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const commentId = document.getElementById(`commentId`).dataset.cardDetail;
+      coomentDelete(boardId, cardId, commentId);
     });
   }, 100);
 }
@@ -413,7 +421,7 @@ function deleteCard(cardId, columnId) {
 // 카드 댓글 등록
 function commentCard(boardId, cardId, text) {
   const accessToken = localStorage.getItem('access_token');
-
+  showLoading();
   axios
     .post(
       `/board/${boardId}/card/${cardId}/comment`,
@@ -424,6 +432,25 @@ function commentCard(boardId, cardId, text) {
         headers: { Authorization: `Bearer ${accessToken}` },
       },
     )
+    .then((response) => {
+      hideLoading();
+      alert(response.data.message);
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+
+// 댓글 삭제
+function coomentDelete(boardId, cardId, commentId) {
+  const accessToken = localStorage.getItem('access_token');
+  showLoading();
+  axios
+    .delete(`/board/${boardId}/card/${cardId}/comment/${commentId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
     .then((response) => {
       hideLoading();
       alert(response.data.message);
