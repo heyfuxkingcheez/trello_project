@@ -109,7 +109,18 @@
 
       .plus-sign {
         font-weight: bold;
-        font-size: 15px; /* Adjust the font size as needed */
+        font-size: 15px;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+      }
+
+      .flex-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
     </style>
   </head>
@@ -123,59 +134,13 @@
     <div id="body-second">
       <div class="container mx-auto px-4">
         <div class="center-container">
-          <div class="text-2xl font-semibold mb-4" id="boardTitle">
-            My Board - ㅁㄴㅇㅁㄴㅇㅁㄴㅇ
-          </div>
+          <div class="text-2xl font-semibold mb-4" id="boardTitle"></div>
           <div class="text-l font-semibold mb-4" id="addColumn">
             + Add Column
           </div>
         </div>
       </div>
-      <div id="columnList" class="columnList">
-        <div class="column" id="todo">
-          <div class="column-header">
-            <div class="left-content">todo</div>
-            <div class="right-content">
-              <button
-                type="button"
-                class="edit-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
-                id="editColumnOpenModal"
-              >
-                수정
-              </button>
-              <button
-                type="button"
-                class="delete-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
-                id="deleteColumnOpenModal"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-          <div class="cardList">
-            <div class="card" draggable="true">
-              <strong>asd</strong><br /><span class="due-date">2024-01-02</span
-              ><br /><span class="priority">high</span><br /><span
-                class="content"
-                >asd</span
-              ><br /><button
-                class="edit-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
-                type="button"
-              >
-                수정</button
-              ><button
-                type="button"
-                class="delete-btn bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow"
-              >
-                삭제
-              </button>
-            </div>
-          </div>
-          <div class="centered-content">
-            <div class="plus-sign">+ Add Card</div>
-          </div>
-        </div>
-      </div>
+      <div id="columnList" class="columnList"></div>
     </div>
     <div id="footer"></div>
 
@@ -272,16 +237,18 @@
               <label class="block text-gray-700 text-sm font-bold mb-2"
                 >카드 내용</label
               >
-              <input
+              <textarea
                 id="addCardDescription"
                 class="shadow border rounded py-2 px-3 w-full"
-              />
+              ></textarea>
             </div>
+
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2"
                 >카드 색상</label
               >
               <input
+                type="color"
                 id="addCardColor"
                 class="shadow border rounded py-2 px-3 w-full"
               />
@@ -318,6 +285,9 @@
       </div>
     </section>
     <!-- 카드 추가 모달 -->
-    <section class="addColumn-modal"></section>
+
+    <!-- 카드 상세보기 모달 -->
+    <section></section>
+    <!-- 카드 상세보기 모달 -->
   </body>
 </html>

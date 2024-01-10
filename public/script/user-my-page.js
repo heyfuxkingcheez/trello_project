@@ -154,7 +154,7 @@ function fetchBoardDetails(boardId) {
     })
     .then((response) => {
       const boardDetails = response.data;
-      window.location.href = `board-main-page-prototype.html?boardId=${boardId}&name=${encodeURIComponent(
+      window.location.href = `board.html?boardId=${boardId}&name=${encodeURIComponent(
         boardDetails.name,
       )}&color=${encodeURIComponent(
         boardDetails.backgroundColor,
