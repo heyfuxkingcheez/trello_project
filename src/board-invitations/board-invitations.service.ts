@@ -12,6 +12,8 @@ export class BoardInvitationsService {
     constructor( 
         @InjectRepository(Board)
         private readonly boardRepository: Repository<Board>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
         @InjectRepository(BoardInvitation)
         private readonly invitationRepository: Repository<BoardInvitation>
     ) {}
@@ -34,10 +36,15 @@ export class BoardInvitationsService {
     async createInvite(ownerId:number, invitationDto:invitationDto){
         //해당 보드 있는지 확인
         const invitedBoard = await this.findBoard(invitationDto.board_id, ownerId);
+
+        //해당 user id 확인
+        const invitedUser = await this.userRepository.findOne({
+            where: {email: invitationDto.email,}
+        })
         
         //이미 초대한 경우
         const findInvitation = await this.invitationRepository.findBy({
-            user_id: invitationDto.user_id,
+            user_id: invitedUser.id,
             board_id: invitationDto.board_id
         })
 
@@ -45,12 +52,12 @@ export class BoardInvitationsService {
             throw new BadRequestException('이미 해당 보드에 초대 중인 유저입니다.');
         }
 
-        if(invitationDto.user_id === ownerId) {
+        if(invitedUser.id === ownerId) {
             throw new BadRequestException('자기 자신은 초대할 수 없습니다.');
         }
 
         const createdInvatation = await this.invitationRepository.save({
-            user_id: invitationDto.user_id,
+            user_id: invitedUser.id,
             board_id: invitationDto.board_id,
             status: 'invited'
         });
@@ -60,10 +67,30 @@ export class BoardInvitationsService {
 
     async getInvitedAll(userId: number) {
         //현재 초대받고 있는 board 보여주기
-        const invitedBoard = await this.invitationRepository.findBy({
-            user_id: userId,
-            status: 'invited'
+        const invited = await this.invitationRepository.find({
+            where: {
+                user_id: userId,
+                status: 'invited',
+              },
+            select: ['id', 'user_id', 'board_id', 'status', 'createdAt']
         });
+
+        //board 설명과 owner까지 같이 보여주기.
+        const invitedBoard = [];
+        for(const invite of invited) {
+            const board = await this.boardRepository.findOne({ where: { id: invite.board_id } });
+            const owner = await this.userRepository.findOne({where: { id: board.creator_id}});
+
+            invitedBoard.push({
+                id:invite.id,
+                user_id: invite.user_id,
+                board_id: invite.board_id,
+                board_name: board.name,
+                board_description: board.description,
+                board_owner: owner.username,
+                status: invite.status
+            });
+        }
 
         return invitedBoard;
     }
