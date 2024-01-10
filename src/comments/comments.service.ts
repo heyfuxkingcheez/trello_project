@@ -44,6 +44,7 @@ export class CommentsService {
     // 조회
     const getComments = await this.commentRepository.find({
       where: { card: { id: cardId } },
+      relations: ['user'],
     });
     console.log('댓글들', getComments);
     return getComments;

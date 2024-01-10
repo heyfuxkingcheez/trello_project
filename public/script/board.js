@@ -247,6 +247,17 @@ function detailCard(cardId) {
       <label class="block text-gray-700 text-sm font-bold mb-2">마감 기한 </label><span>${data.card.status}</span>
       <input id="detailCardDeadLine${data.card.id}" value="${formattedDueDate}" type="datetime-local" class="shadow border rounded py-2 px-3 w-full" />
     </div>
+
+    <div id="card-comment${data.card.id}" class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">Comments</label>
+      <input id="detailCardComment${data.card.id}" type="text" class="shadow border rounded py-2 px-4 w-200" />
+      <button id="cardDetailCommentBtn${data.card.id}" type="button"
+      class="ml-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      등록
+    </button>
+    <div id="comment${data.card.id}" class="mb-4">
+    </div>
+    </div>
     
     <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       id="cardDetailEditBtn${data.card.id}">
@@ -283,6 +294,28 @@ function detailCard(cardId) {
           alert(error.response.data.message);
           console.error('Error:', error);
         });
+
+      axios
+        .get(`/board/${boardId}/card/${cardId}/comment`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((response) => {
+          const data = response.data.getComments;
+          const cardDetailComment = document.getElementById(`comment${cardId}`);
+          cardDetailComment.innerHTML = '';
+          data.forEach((comment) => {
+            console.log(comment);
+            let commentHtml = `
+            <span>${comment.user.username}</span>  <span>${comment.createdAt}</span>
+            <p>${comment.text}</p>
+            `;
+            cardDetailComment.innerHTML += commentHtml;
+          });
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+          console.error('Error:', error);
+        });
     })
     .catch((error) => {
       alert(error.response.data.message);
@@ -312,6 +345,15 @@ function detailCard(cardId) {
       const title = document.getElementById(`detailCardName${cardId}`).value;
 
       editCard(boardId, cardId, title, color, description, dueDate);
+    });
+    const cardDetailCommentBtn = document.getElementById(
+      `cardDetailCommentBtn${cardId}`,
+    );
+    cardDetailCommentBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      console.log('댓글 등록 버튼!', cardId);
+      const text = document.getElementById(`detailCardComment${cardId}`).value;
+      commentCard(boardId, cardId, text);
     });
   }, 100);
 }
@@ -367,6 +409,32 @@ function deleteCard(cardId, columnId) {
       console.error('Error:', error);
     });
 }
+
+// 카드 댓글 등록
+function commentCard(boardId, cardId, text) {
+  const accessToken = localStorage.getItem('access_token');
+
+  axios
+    .post(
+      `/board/${boardId}/card/${cardId}/comment`,
+      {
+        text: text,
+      },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then((response) => {
+      hideLoading();
+      alert(response.data.message);
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+
 // 카드 add 모달창
 function addCard(columnId) {
   const addCardName = document.getElementById('addCardName');
