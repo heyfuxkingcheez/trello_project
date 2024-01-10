@@ -90,15 +90,22 @@ Authorization: Bearer {{AccessToken}}
 GET {{domain}}/board/1/card/21/worker
 Authorization: Bearer {{AccessToken}}
 
+###
+# 보드에 초대된 사람 조회
+GET {{domain}}/board/1/worker
+Authorization: Bearer {{AccessToken}}
+
 ### 
 # 카드에 작업자 할당
 POST {{domain}}/board/1/card/21/worker
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
-[
-  {"selectedWorker": 1}
-]
+
+{
+  "selectedWorker": 2
+}
+
 
 ###
 # 카드의 작업자 삭제
@@ -106,6 +113,5 @@ DELETE {{domain}}/board/1/card/21/worker
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
-[
+
   {"selectedWorker": 1}
-]

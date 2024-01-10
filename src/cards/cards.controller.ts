@@ -48,13 +48,10 @@ export class CardsController {
     return { status: HttpStatus.CREATED, message: '카드 등록 성공', card };
   }
 
-  // 작업자 조회
+  // 초대된 사람들 모음
   @Get('/worker')
-  async getWorker(@Req() req, @Param('boardId') boardId: string) {
-    const existedWokerAtBoard = await this.cardsService.getWorker(
-      req.user.id,
-      +boardId,
-    );
+  async getWorker(@Param('boardId') boardId: string) {
+    const existedWokerAtBoard = await this.cardsService.getWorker(+boardId);
     return {
       status: HttpStatus.OK,
       message: '작업자 조회 성공',
