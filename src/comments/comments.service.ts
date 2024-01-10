@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -26,6 +27,9 @@ export class CommentsService {
   ) {
     // 카드 존재하는지 유무
     await this.cardsService.existedCard(cardId);
+    if (!text) {
+      throw new BadRequestException('내용을 입력해주세요.');
+    }
 
     // 등록
     const createComment = await this.commentRepository.save({

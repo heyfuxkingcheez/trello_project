@@ -290,18 +290,10 @@ function detailCard(cardId) {
           workers.forEach((worker) => {
             let cardDetailHtml = `
             <span id="detailCardWorker${worker.id}" class="shadow border rounded py-2 px-3 w-full">${worker.username}</span>
-            <button id="WorkerDeleteBtn${worker.id}">x</button>
+            <button id="WorkerDeleteBtn${worker.id}" data-card-worker-id="${cardId}">x</button>
             `;
 
             cardDetailWorker.innerHTML += cardDetailHtml;
-
-            // 작업자 삭제
-            const WorkerDeleteBtn = document.getElementById(
-              `WorkerDeleteBtn${worker.id}`,
-            );
-            WorkerDeleteBtn.addEventListener('click', (e) => {
-              console.log('작업자 삭제 클릭');
-            });
           });
         })
         .catch((error) => {
@@ -350,12 +342,10 @@ function detailCard(cardId) {
             }</span>  <span>${comment.createdAt.slice(
               0,
               10,
-            )}</span> <button class="deleteColumnButton bg-whi te hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow" id="deleteCommentId${cardId}">삭제</button>
-            <p>${
-              comment.text
-            }</p><span style="display: none;" data-card-detail="${
+            )}</span> <button class="deleteColumnButton bg-whi te hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow" data-comment-card-id="${cardId}" id="comment${
               comment.id
-            }" id="commentId"></span>
+            }">삭제</button>
+            <p>${comment.text}</p>
             `;
             cardDetailComment.innerHTML += commentHtml;
           });
@@ -369,6 +359,7 @@ function detailCard(cardId) {
       alert(error.response.data.message);
       console.error('Error:', error);
     });
+  addEventListenerCardDetailBtn();
   // 위에 html 삽입 되고 나서 동작하게 비동기 처리...
   setTimeout(() => {
     // 모달 닫기
@@ -409,32 +400,40 @@ function detailCard(cardId) {
       const text = document.getElementById(`detailCardComment${cardId}`).value;
       commentCard(boardId, cardId, text);
     });
-
-    // 댓글 삭제
-    const commentDeleteBtn = document.getElementById(
-      `deleteCommentId${cardId}`,
-    );
-    commentDeleteBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const commentId = document.getElementById(`commentId`).dataset.cardDetail;
-      coomentDelete(boardId, cardId, commentId);
-    });
   }, 100);
 }
 
-// 작업자 선택
-function selectWorkerFunc(workerId, cardId, boardId) {
+// 카드 상세 클릭 이벤트
+function addEventListenerCardDetailBtn() {
+  const cardDetailList = document.getElementById('detailCardModal');
+
+  cardDetailList.addEventListener('click', (event) => {
+    event.preventDefault();
+    const targetId = event.target.id;
+    if (targetId.indexOf('WorkerDeleteBtn') !== -1) {
+      const workerId = targetId.replace('WorkerDeleteBtn', '');
+      const cardId = event.target.dataset.cardWorkerId;
+      console.log(workerId, cardId);
+      deleteWorker(+workerId, +cardId);
+    } else if (targetId.indexOf('comment') !== -1) {
+      const commentId = targetId.replace('comment', '');
+      const cardId = event.target.dataset.commentCardId;
+      console.log(commentId, cardId);
+      comentDelete(+commentId, +cardId);
+    }
+  });
+}
+
+// 작업자 삭제
+function deleteWorker(workerId, cardId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
   const accessToken = localStorage.getItem('access_token');
+  console.log(accessToken);
   axios
-    .post(
-      `/board/${boardId}/card/${cardId}/worker`,
-      {
-        selectedWorker: workerId,
-      },
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      },
-    )
+    .delete(`/board/${boardId}/card/${cardId}/worker/${workerId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
     .then((response) => {
       alert(response.data.message);
       window.location.reload();
@@ -469,6 +468,7 @@ function editCard(boardId, cardId, title, color, description, dueDate) {
       window.location.reload();
     })
     .catch((error) => {
+      hideLoading();
       alert(error.response.data.message);
       console.error('Error:', error);
     });
@@ -517,13 +517,16 @@ function commentCard(boardId, cardId, text) {
       window.location.reload();
     })
     .catch((error) => {
+      hideLoading();
       alert(error.response.data.message);
       console.error('Error:', error);
     });
 }
 
 // 댓글 삭제
-function coomentDelete(boardId, cardId, commentId) {
+function comentDelete(commentId, cardId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
   const accessToken = localStorage.getItem('access_token');
   showLoading();
   axios
@@ -536,6 +539,7 @@ function coomentDelete(boardId, cardId, commentId) {
       window.location.reload();
     })
     .catch((error) => {
+      hideLoading();
       alert(error.response.data.message);
       console.error('Error:', error);
     });

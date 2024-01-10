@@ -103,7 +103,7 @@ Authorization: Bearer {{AccessToken}}
 
 
 {
-  "selectedWorker": 2
+  "selectedWorker": 1
 }
 
 
