@@ -16,7 +16,7 @@ export class Card {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => CardColumn, { nullable: false })
+  @ManyToOne(() => CardColumn, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'column_id' })
   column: CardColumn;
 
