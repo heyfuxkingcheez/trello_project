@@ -309,9 +309,6 @@ function detailCard(cardId) {
       const dueDate = document.getElementById(
         `detailCardDeadLine${cardId}`,
       ).value;
-      console.log('컬러', color);
-      console.log('내용', description);
-      console.log('마감기한', dueDate);
 
       editCard(boardId, cardId, color, description, dueDate);
     });
@@ -336,6 +333,7 @@ function editCard(boardId, cardId, color, description, dueDate) {
       },
     )
     .then((response) => {
+      hideLoading();
       alert(response.data.message);
       window.location.reload();
     })
