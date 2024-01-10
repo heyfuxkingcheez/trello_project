@@ -231,7 +231,7 @@ function detailCard(cardId) {
     </div>
 
     <div id="card-name${data.card.id}" class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">작성자</label>
+      <label class="block text-gray-700 text-sm font-bold mb-2">카드 제목</label>
       <p id="detailCardName${data.card.id}" class="shadow border rounded py-2 px-3 w-full">${data.card.name}</p>
     </div>
     <div id="card-content${data.card.id}" class="mb-4">
