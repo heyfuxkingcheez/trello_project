@@ -61,7 +61,7 @@ https://www.sisok400km.store/
 
 ## API
 
-https://www.notion.so/400km-f186b59576814aa6bcbe2aada3f904db?pvs=4
+https://few-pulsar-4d0.notion.site/400km-f186b59576814aa6bcbe2aada3f904db
 
 ## file
 
