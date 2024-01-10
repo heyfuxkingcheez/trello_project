@@ -116,7 +116,7 @@ export class CardsService {
   // 작업자 삭제
   async deleteWorker(
     cardId: number,
-    selectedWorker: any,
+    workerId: number,
     boardId: number,
     userId: number,
   ) {
@@ -124,7 +124,7 @@ export class CardsService {
 
     const existWorker = await this.cardUserRepository.findOne({
       where: {
-        user: { id: selectedWorker.selectedWorker },
+        user: { id: workerId },
         card: { id: cardId },
       },
     });
@@ -134,7 +134,7 @@ export class CardsService {
 
     await this.cardUserRepository.delete({
       card: { id: cardId },
-      user: { id: selectedWorker.selectedWorker },
+      user: { id: workerId },
     });
   }
 

@@ -84,16 +84,16 @@ export class CardsController {
     return { status: HttpStatus.OK, message: '작업자 할당 성공', worker };
   }
   // 작업자 삭제
-  @Delete('/card/:cardId/worker')
+  @Delete('/card/:cardId/worker/:workerId')
   async deleteWorker(
     @Param('cardId') cardId: string,
-    @Body() selectedWorker: Array<object>,
+    @Param('workerId') workerId: string,
     @Param('boardId') boardId: string,
     @Req() req,
   ) {
     await this.cardsService.deleteWorker(
       +cardId,
-      selectedWorker,
+      +workerId,
       +boardId,
       req.user.id,
     );

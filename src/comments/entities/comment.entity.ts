@@ -23,7 +23,7 @@ export class Comment {
   @JoinColumn({ name: 'card_id' })
   card: Card;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false })
   text: string;
 
   @CreateDateColumn({ name: 'created_at' })
