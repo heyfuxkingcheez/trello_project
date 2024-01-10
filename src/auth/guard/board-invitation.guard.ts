@@ -42,8 +42,8 @@ export class BoardInvitationGuard implements CanActivate {
       where: { creator_id: userId },
     });
 
-    if (!isCreatorId) {
-      if (!existedUser) {
+    if (!existedUser) {
+      if (!isCreatorId) {
         throw new UnauthorizedException('조작할 권한이 없습니다.');
       }
     }

@@ -59,16 +59,16 @@ export class CardsService {
     return await this.cardsRepository.findOne({ where: { id: cardId } });
   }
 
-  // 작업자 조회
-  async getWorker(userId: number, boardId: number) {
+  // 보드 초대된 사람 조회
+  async getWorker(boardId: number) {
     const getCardUsers = await this.boardInvitationRepository.find({
       where: {
-        user: { id: userId },
         status: 'invited',
         board: { id: boardId },
       },
+      relations: ['user'],
     });
-    let wokers: any = getCardUsers.map((user) => user.id);
+    let wokers: any = getCardUsers.map((user) => user.user);
     console.log('초대자들: ', wokers);
 
     return wokers;
@@ -91,41 +91,26 @@ export class CardsService {
     cardId: number,
     userId: number,
     boardId: number,
-    selectedWoker: any,
+    selectedWorker: any,
   ) {
     console.log(cardId, userId, boardId);
     await this.existedCard(cardId);
-    // 보드에 초대된 사용자들 찾기
-    const workers = await this.getWorker(userId, boardId);
-    // 선택된 사용자들
-    let selectWorker = selectedWoker.map((worker) => worker.selectedWorker);
-    // 보드에 초대된 사용자와 선택된 사용자들 필터
-    const filteredWorkers = selectWorker.filter((worker) =>
-      workers.includes(worker),
-    );
-    // 보드에 초대된 작업자인지 확인하는 예외 처리
-    const UnBelongToBoard = selectWorker.filter(
-      (worker) => !workers.includes(worker),
-    );
 
-    if (UnBelongToBoard.length !== 0)
-      throw new BadRequestException('잘못된 요청입니다.');
-
-    for (let i = 0; i < filteredWorkers.length; i++) {
-      // DB에 이미 존재하는지 확인
-      const existWorker = await this.cardUserRepository.findOne({
-        where: { user: { id: filteredWorkers[i] } },
-      });
-      if (existWorker) {
-        throw new BadRequestException('이미 추가했습니다.');
-      }
-      // 저장
-      await this.cardUserRepository.save({
+    const existWorker = await this.cardUserRepository.findOne({
+      where: {
+        user: { id: selectedWorker.selectedWorker },
         card: { id: cardId },
-        user: { id: filteredWorkers[i] },
-      });
+      },
+    });
+    if (existWorker) {
+      throw new BadRequestException('이미 추가했습니다.');
     }
-    return workers;
+
+    await this.cardUserRepository.save({
+      card: { id: cardId },
+      user: { id: selectedWorker.selectedWorker },
+    });
+    return selectedWorker;
   }
 
   // 작업자 삭제
@@ -136,23 +121,21 @@ export class CardsService {
     userId: number,
   ) {
     await this.existedCard(cardId);
-    const workers = await this.getWorker(userId, boardId);
-    const selectWorker = selectedWorker.map((worker) => worker.selectedWorker);
-    const filteredWorkers = selectWorker.filter((worker) =>
-      workers.includes(worker),
-    );
-    const UnBelongToBoard = selectWorker.filter(
-      (worker) => !workers.includes(worker),
-    );
-    if (UnBelongToBoard.length !== 0) {
-      throw new BadRequestException('잘못된 요청입니다.');
-    }
-    for (let i = 0; i < filteredWorkers.length; i++) {
-      await this.cardUserRepository.delete({
+
+    const existWorker = await this.cardUserRepository.findOne({
+      where: {
+        user: { id: selectedWorker.selectedWorker },
         card: { id: cardId },
-        user: { id: filteredWorkers[i] },
-      });
+      },
+    });
+    if (!existWorker) {
+      throw new BadRequestException('이미 삭제했습니다.');
     }
+
+    await this.cardUserRepository.delete({
+      card: { id: cardId },
+      user: { id: selectedWorker.selectedWorker },
+    });
   }
 
   // 마감 상태 변경

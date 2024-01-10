@@ -10,8 +10,33 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./css/loading.css" />
   <link rel="stylesheet" href="./css/header-footer.css" />
+  <script>
+    function selectWorkerFunc(workerId, cardId, boardId) {
+      const accessToken = localStorage.getItem('access_token');
+      axios
+        .post(
+          `/board/${boardId}/card/${cardId}/worker`,
+          {
+            selectedWorker: workerId.value,
+          },
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          },
+        )
+        .then((response) => {
+          alert(response.data.message);
+          window.location.reload();
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+          console.error('Error:', error);
+        });
+    }
+  </script>
   <script type="module" defer src="./script/header-footer.js"></script>
   <script type="module" defer src="./script/board.js"></script>
+
+
 
   <style>
     .center-container {

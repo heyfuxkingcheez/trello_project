@@ -240,6 +240,9 @@ function detailCard(cardId) {
     </div>
     <div id="card-worker${data.card.id}" class="mb-4">
     <label class="block text-gray-700 text-sm font-bold mb-2">작업자</label>
+    <select id="worker-select${data.card.id}" onchange="selectWorkerFunc(this, ${cardId}, ${boardId})" class="border border-gray-300 rounded-md" name="worker-list">
+    <option>선택해주세요</option>
+    </select>
     <div id="worker${data.card.id}">
     </div>
     </.div>
@@ -273,6 +276,7 @@ function detailCard(cardId) {
       hideLoading();
       cardDetail.innerHTML += cardDetailHtml;
 
+      // 작업자 get
       axios
         .get(`board/${boardId}/card/${cardId}/worker`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -285,9 +289,19 @@ function detailCard(cardId) {
 
           workers.forEach((worker) => {
             let cardDetailHtml = `
-            <span id="detailCardWorker${worker.id}" class="shadow border rounded py-2 px-3 w-full">${worker.username}</span>`;
+            <span id="detailCardWorker${worker.id}" class="shadow border rounded py-2 px-3 w-full">${worker.username}</span>
+            <button id="WorkerDeleteBtn${worker.id}">x</button>
+            `;
 
             cardDetailWorker.innerHTML += cardDetailHtml;
+
+            // 작업자 삭제
+            const WorkerDeleteBtn = document.getElementById(
+              `WorkerDeleteBtn${worker.id}`,
+            );
+            WorkerDeleteBtn.addEventListener('click', (e) => {
+              console.log('작업자 삭제 클릭');
+            });
           });
         })
         .catch((error) => {
@@ -295,6 +309,30 @@ function detailCard(cardId) {
           console.error('Error:', error);
         });
 
+      // 보드 사용자 list get
+      axios
+        .get(`/board/${boardId}/worker`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((response) => {
+          const worker = response.data.existedWokerAtBoard;
+          const cardDetailWorkerSelect = document.getElementById(
+            `worker-select${cardId}`,
+          );
+          // cardDetailWorkerSelect.innerHTML = '';
+          worker.forEach((worker) => {
+            let selectWorkerHTML = `
+            <option id="option${cardId}" value="${worker.id}">${worker.username}</option>
+            `;
+            cardDetailWorkerSelect.innerHTML += selectWorkerHTML;
+          });
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+          console.error('Error:', error);
+        });
+
+      // 댓글 get
       axios
         .get(`/board/${boardId}/card/${cardId}/comment`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -305,9 +343,19 @@ function detailCard(cardId) {
           cardDetailComment.innerHTML = '';
           data.forEach((comment) => {
             console.log(comment);
+
             let commentHtml = `
-            <span>${comment.user.username}</span>  <span>${comment.createdAt}</span> <button class="deleteColumnButton bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow" id="deleteCommentId${cardId}">삭제</button>
-            <p>${comment.text}</p><span style="display: none;" data-card-detail="${comment.id}" id="commentId"></span>
+            <span>${
+              comment.user.username
+            }</span>  <span>${comment.createdAt.slice(
+              0,
+              10,
+            )}</span> <button class="deleteColumnButton bg-whi te hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow" id="deleteCommentId${cardId}">삭제</button>
+            <p>${
+              comment.text
+            }</p><span style="display: none;" data-card-detail="${
+              comment.id
+            }" id="commentId"></span>
             `;
             cardDetailComment.innerHTML += commentHtml;
           });
@@ -321,7 +369,9 @@ function detailCard(cardId) {
       alert(error.response.data.message);
       console.error('Error:', error);
     });
+  // 위에 html 삽입 되고 나서 동작하게 비동기 처리...
   setTimeout(() => {
+    // 모달 닫기
     const cardDetailModalCloseBtn = document.getElementById(
       `cardDetailModalCloseBtn${cardId}`,
     );
@@ -329,6 +379,8 @@ function detailCard(cardId) {
       event.preventDefault();
       document.getElementById(`detailCardModal`).style.display = 'none';
     });
+
+    // 모달 수정
     const cardDetailModalEditBtn = document.getElementById(
       `cardDetailEditBtn${cardId}`,
     );
@@ -346,6 +398,8 @@ function detailCard(cardId) {
 
       editCard(boardId, cardId, title, color, description, dueDate);
     });
+
+    // 댓글 등록
     const cardDetailCommentBtn = document.getElementById(
       `cardDetailCommentBtn${cardId}`,
     );
@@ -355,6 +409,8 @@ function detailCard(cardId) {
       const text = document.getElementById(`detailCardComment${cardId}`).value;
       commentCard(boardId, cardId, text);
     });
+
+    // 댓글 삭제
     const commentDeleteBtn = document.getElementById(
       `deleteCommentId${cardId}`,
     );
@@ -364,6 +420,29 @@ function detailCard(cardId) {
       coomentDelete(boardId, cardId, commentId);
     });
   }, 100);
+}
+
+// 작업자 선택
+function selectWorkerFunc(workerId, cardId, boardId) {
+  const accessToken = localStorage.getItem('access_token');
+  axios
+    .post(
+      `/board/${boardId}/card/${cardId}/worker`,
+      {
+        selectedWorker: workerId,
+      },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    .then((response) => {
+      alert(response.data.message);
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
 }
 
 // 카드 수정
