@@ -232,7 +232,7 @@ function detailCard(cardId) {
 
     <div id="card-name${data.card.id}" class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">카드 제목</label>
-      <p id="detailCardName${data.card.id}" class="shadow border rounded py-2 px-3 w-full">${data.card.name}</p>
+      <input id="detailCardName${data.card.id}" value="${data.card.name}" class="shadow border rounded py-2 px-3 w-full">
     </div>
     <div id="card-content${data.card.id}" class="mb-4">
       <label class="block text-gray-700 text-sm font-bold mb-2">카드 내용</label>
@@ -309,14 +309,15 @@ function detailCard(cardId) {
       const dueDate = document.getElementById(
         `detailCardDeadLine${cardId}`,
       ).value;
+      const title = document.getElementById(`detailCardName${cardId}`).value;
 
-      editCard(boardId, cardId, color, description, dueDate);
+      editCard(boardId, cardId, title, color, description, dueDate);
     });
   }, 100);
 }
 
 // 카드 수정
-function editCard(boardId, cardId, color, description, dueDate) {
+function editCard(boardId, cardId, title, color, description, dueDate) {
   showLoading();
   console.log('잘 들어옴', color);
   const accessToken = localStorage.getItem('access_token');
@@ -324,6 +325,7 @@ function editCard(boardId, cardId, color, description, dueDate) {
     .patch(
       `/board/${boardId}/card/${cardId}`,
       {
+        name: title,
         description: description,
         color: color,
         dueDate: dueDate,
