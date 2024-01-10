@@ -66,7 +66,7 @@ export class BoardInvitationsService {
             status: 'invited'
         });
 
-        return createdInvatation.id;
+        return { id:createdInvatation.id }
     }
 
     async getInvitedAll(userId: number) {
