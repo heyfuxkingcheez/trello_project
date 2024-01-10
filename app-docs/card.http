@@ -66,13 +66,13 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 카드 순서 변경
-PATCH {{domain}}/board/1/column/1/cardOrder
+PATCH {{domain}}/board/2/column/6/cardOrder
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "newOrder": 3,
-  "cardId": 13
+  "newOrder": 1,
+  "cardId": 14
 }
 
 ###

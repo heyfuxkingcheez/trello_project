@@ -1,6 +1,9 @@
 // public/script/user-info-edit.js
 import { showLoading, hideLoading } from './loading.js';
 
+let draggedCard = null;
+let originColumn = null;
+
 document.addEventListener('DOMContentLoaded', function () {
   const urlParams = new URLSearchParams(window.location.search);
   const boardId = urlParams.get('boardId');
@@ -27,7 +30,7 @@ function fetchColums(boardId) {
       columnsList.innerHTML = '';
       columns.data.forEach((column) => {
         let columnHtml = `
-        <div class="column" >
+        <div class="column" data-column-id="${column.id}" >
         <div class="column-header">
           <div class="left-content">${column.name}</div>
           <div class="right-content">
@@ -84,7 +87,7 @@ function fetchColums(boardId) {
             cardResponse.data.cards.forEach((card) => {
               const formattedDueDate = card.dueDate.slice(0, 19);
               let cardHtml = `
-                <div class="card" draggable="true"  style="border: 4px solid ${card.color}">
+                <div class="card" draggable="true" data-card-id="${card.id}"  style="border: 4px solid ${card.color}">
                   <strong> ${card.name}</strong><br />
                   <span class="due-date">마감일: ${formattedDueDate}</span><br />
               
@@ -108,6 +111,10 @@ function fetchColums(boardId) {
 
               cardList.innerHTML += cardHtml;
             });
+          })
+          .then(() => {
+            // 카드가 모두 추가된 후에 드래그 앤 드롭 설정
+            setupDragAndDrop();
           })
           .catch((error) => {
             alert(error.response.data.message);
@@ -578,3 +585,108 @@ document
         document.getElementById('addColumnName').value = '';
       });
   });
+
+//====
+// 드래그 앤 드롭 설정
+function setupDragAndDrop() {
+  const cards = document.querySelectorAll('.card');
+  const columns = document.querySelectorAll('.column');
+
+  // 카드에 대한 이벤트 리스너 설정
+  cards.forEach((card) => {
+    card.setAttribute('draggable', true);
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
+  });
+
+  // 컬럼에 대한 이벤트 리스너 설정
+  columns.forEach((column) => {
+    column.addEventListener('dragover', handleDragOver);
+    column.addEventListener('drop', handleDrop);
+  });
+  console.log('너 동작은 하니?');
+}
+
+// 드래그 시작 시 호출
+function handleDragStart(event) {
+  draggedCard = event.target;
+  originColumn = draggedCard.closest('.column');
+  console.log('Drag Start:', draggedCard);
+}
+
+// 드래그 종료 시 호출
+function handleDragEnd() {
+  console.log('Drag End');
+  draggedCard = null;
+  originColumn = null;
+}
+
+// 드래그 오버 시 호출
+function handleDragOver(event) {
+  event.preventDefault();
+  console.log('Drag Over');
+}
+// 드롭 시 호출
+function handleDrop(event) {
+  event.preventDefault();
+  const targetColumn = event.target.closest('.column');
+  const targetCardList = targetColumn.querySelector('.cardList');
+
+  if (targetCardList && draggedCard) {
+    const cards = Array.from(targetCardList.children);
+    const droppedIndex = cards.indexOf(event.target.closest('.card'));
+
+    targetCardList.insertBefore(draggedCard, cards[droppedIndex]);
+
+    updateCardPosition(draggedCard, originColumn, targetColumn, droppedIndex);
+    console.log('Drop:', draggedCard);
+  }
+}
+
+function updateCardPosition(card, originColumn, newColumn, newIndex) {
+  const cardId = card.getAttribute('data-card-id');
+  const originColumnId = originColumn.getAttribute('data-column-id');
+  const newColumnId = newColumn.getAttribute('data-column-id');
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+
+  if (newColumnId !== originColumnId) {
+    // 다른 컬럼으로 이동
+    axios
+      .patch(
+        `/board/${boardId}/column/${originColumnId}/cardMove/${cardId}`,
+        { destinationColumnId: newColumnId },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      )
+      .then(() => console.log('Card moved successfully'))
+      .catch((error) => console.error('Error moving card', error));
+  } else {
+    // 같은 컬럼 내에서 위치 변경
+    const newOrder = newIndex; // 서버에 보낼 새 순서는 드롭된 인덱스 + 1
+
+    console.log(
+      boardId,
+      'boardId',
+      newColumnId,
+      'columnId',
+      cardId,
+      'cardId',
+      newOrder,
+      'newOrder',
+    );
+    axios
+      .patch(
+        `/board/${boardId}/column/${newColumnId}/cardOrder`,
+        { cardId: cardId, newOrder: newOrder },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      )
+      .then(() => console.log('Card order updated successfully'))
+      .catch((error) => console.error('Error updating card order', error));
+  }
+}

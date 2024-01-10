@@ -1,259 +1,311 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Page</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/loading.css" />
+    <link rel="stylesheet" href="./css/header-footer.css" />
+    <script type="module" defer src="./script/header-footer.js"></script>
+    <script type="module" defer src="./script/board.js"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Page</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="./css/loading.css" />
-  <link rel="stylesheet" href="./css/header-footer.css" />
-  <script type="module" defer src="./script/header-footer.js"></script>
-  <script type="module" defer src="./script/board.js"></script>
+    <style>
+      .center-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+      }
 
-  <style>
-    .center-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-    }
+      #body-second {
+        padding-top: 100px;
+      }
 
-    #body-second {
-      padding-top: 100px;
-    }
+      #boardTitle {
+        padding-top: 10px;
+      }
 
-    #boardTitle {
-      padding-top: 10px;
-    }
+      #addColumn {
+        padding-top: 10px;
+      }
 
-    #addColumn {
-      padding-top: 10px;
-    }
+      .columnList {
+        display: flex;
+        justify-content: space-around;
+        padding: 20px;
+      }
 
-    .columnList {
-      display: flex;
-      justify-content: space-around;
-      padding: 20px;
-    }
+      .column {
+        background-color: #f4f4f4;
+        border-radius: 4px;
+        padding: 10px;
+        width: 30%;
+        border: 1px solid #ccc;
+      }
 
-    .column {
-      background-color: #f4f4f4;
-      border-radius: 4px;
-      padding: 10px;
-      width: 30%;
-      border: 1px solid #ccc;
-    }
+      .column-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+        flex: 1;
+      }
 
-    .column-header {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-      flex: 1;
-    }
+      .left-content {
+        flex-grow: 1;
+      }
 
-    .left-content {
-      flex-grow: 1;
-    }
+      .right-content {
+        display: flex;
+        gap: 10px;
+      }
 
-    .right-content {
-      display: flex;
-      gap: 10px;
-    }
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        margin-bottom: 200px;
+        width: 400px;
+      }
 
-    .modal-content {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      margin-bottom: 500px;
-      width: 400px;
-    }
+      #addColumn:hover {
+        cursor: pointer;
+      }
 
-    #addColumn:hover {
-      cursor: pointer;
-    }
+      .card {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        padding: 10px;
+        cursor: pointer;
+      }
 
-    .card {
-      background-color: white;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      padding: 10px;
-      cursor: pointer;
-    }
+      .deleteColumnButton,
+      .editColumnButton {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
 
-    .deleteColumnButton,
-    .editColumnButton {
-      font-size: 14px;
-      padding: 8px 12px;
-    }
+      .centered-content {
+        display: flex;
+        cursor: pointer;
+        margin-top: 10px;
+      }
 
-    .centered-content {
-      display: flex;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+      .plus-sign {
+        font-weight: bold;
+        font-size: 15px;
+      }
 
-    .plus-sign {
-      font-weight: bold;
-      font-size: 15px;
-    }
+      .header-content {
+        display: flex;
+        align-items: center;
+      }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-    }
+      .flex-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    </style>
+  </head>
 
-    .flex-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  </style>
-</head>
+  <body class="bg-white font-sans antialiased text-gray-900" id="boardColor">
+    <!-- 로딩 표시기 -->
+    <div id="loading" class="loading-overlay hidden">
+      <div class="loading-spinner"></div>
+    </div>
 
-<body class="bg-white font-sans antialiased text-gray-900" id="boardColor">
-  <!-- 로딩 표시기 -->
-  <div id="loading" class="loading-overlay hidden">
-    <div class="loading-spinner"></div>
-  </div>
-
-  <div id="header"></div>
-  <div id="body-second">
-    <div class="container mx-auto px-4">
-      <div class="center-container">
-        <div class="text-2xl font-semibold mb-4" id="boardTitle"></div>
-        <div class="text-l font-semibold mb-4" id="addColumn">
-          + Add Column
+    <div id="header"></div>
+    <div id="body-second">
+      <div class="container mx-auto px-4">
+        <div class="center-container">
+          <div class="text-2xl font-semibold mb-4" id="boardTitle"></div>
+          <div class="text-l font-semibold mb-4" id="addColumn">
+            + Add Column
+          </div>
         </div>
       </div>
+      <div id="columnList" class="columnList"></div>
     </div>
-    <div id="columnList" class="columnList"></div>
-  </div>
-  <div id="footer"></div>
+    <div id="footer"></div>
 
-  <!-- 컬럼 수정 모달 -->
-  <section>
-    <div class="modal-overlay" id="editColumnModal" style="display: none">
-      <div class="modal-content">
-        <form id="editColumnForm">
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">컬럼 이름</label>
-            <input id="editColumnName" class="shadow border rounded py-2 px-3 w-full" />
-          </div>
+    <!-- 컬럼 수정 모달 -->
+    <section>
+      <div class="modal-overlay" id="editColumnModal" style="display: none">
+        <div class="modal-content">
+          <form id="editColumnForm">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2"
+                >컬럼 이름</label
+              >
+              <input
+                id="editColumnName"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
 
-          <div class="flex justify-end">
-            <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              id="editColumnBtn">
-              수정
-            </button>
-            <button id="editColumnModalCloseBtn" type="button"
-              class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              닫기
-            </button>
-          </div>
-        </form>
+            <div class="flex justify-end">
+              <button
+                type="button"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                id="editColumnBtn"
+              >
+                수정
+              </button>
+              <button
+                id="editColumnModalCloseBtn"
+                type="button"
+                class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                닫기
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-  </section>
-  <!-- 컬럼 수정 모달 -->
+    </section>
+    <!-- 컬럼 수정 모달 -->
 
-  <!-- 컬럼 추가 모달 -->
-  <section>
-    <div class="modal-overlay" id="addColumnModal" style="display: none">
-      <div class="modal-content">
-        <form id="addColumnForm">
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">컬럼 이름</label>
-            <input id="addColumnName" class="shadow border rounded py-2 px-3 w-full" />
-          </div>
+    <!-- 컬럼 추가 모달 -->
+    <section>
+      <div class="modal-overlay" id="addColumnModal" style="display: none">
+        <div class="modal-content">
+          <form id="addColumnForm">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2"
+                >컬럼 이름</label
+              >
+              <input
+                id="addColumnName"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
 
-          <div class="flex justify-end">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              id="addColumnBtn">
-              추가
-            </button>
-            <button id="addColumnModalCloseBtn" type="button"
-              class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              닫기
-            </button>
-          </div>
-        </form>
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                id="addColumnBtn"
+              >
+                추가
+              </button>
+              <button
+                id="addColumnModalCloseBtn"
+                type="button"
+                class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                닫기
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-  </section>
-  <!-- 컬럼 추가 모달 -->
+    </section>
+    <!-- 컬럼 추가 모달 -->
 
-  <!-- 카드 추가 모달 -->
-  <section>
-    <div class="modal-overlay" id="addCardModal" style="display: none">
-      <div class="modal-content">
-        <form id="addCardForm">
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">카드 이름</label>
-            <input id="addCardName" class="shadow border rounded py-2 px-3 w-full" />
-          </div>
+    <!-- 카드 추가 모달 -->
+    <section>
+      <div class="modal-overlay" id="addCardModal" style="display: none">
+        <div class="modal-content">
+          <form id="addCardForm">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2"
+                >카드 이름</label
+              >
+              <input
+                id="addCardName"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
 
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">카드 내용</label>
-            <textarea id="addCardDescription" class="shadow border rounded py-2 px-3 w-full"></textarea>
-          </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2"
+                >카드 내용</label
+              >
+              <textarea
+                id="addCardDescription"
+                class="shadow border rounded py-2 px-3 w-full"
+              ></textarea>
+            </div>
 
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">카드 색상</label>
-            <input type="color" id="addCardColor" class="shadow border rounded py-2 px-3 w-full" />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">카드 날짜</label>
-            <input id="addCardDate" type="date" class="shadow border rounded py-2 px-3 w-full" />
-          </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2"
+                >카드 색상</label
+              >
+              <input
+                type="color"
+                id="addCardColor"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2"
+                >카드 날짜</label
+              >
+              <input
+                id="addCardDate"
+                type="date"
+                class="shadow border rounded py-2 px-3 w-full"
+              />
+            </div>
 
-          <div class="flex justify-end">
-            <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              id="addCardBtn">
-              추가
-            </button>
-            <button id="addCardModalCloseBtn" type="button"
-              class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              닫기
-            </button>
-          </div>
-        </form>
+            <div class="flex justify-end">
+              <button
+                type="button"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                id="addCardBtn"
+              >
+                추가
+              </button>
+              <button
+                id="addCardModalCloseBtn"
+                type="button"
+                class="ml-1 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                닫기
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-  </section>
-  <!-- 카드 추가 모달 -->
+    </section>
+    <!-- 카드 추가 모달 -->
 
-  <!-- 카드 상세보기 모달 -->
-  <section>
-    <div class="modal-overlay" id="detailCardModal" style="display: none">
-
-    </div>
-
-  </section>
-  <!-- 카드 상세보기 모달 -->
-</body>
-
+    <!-- 카드 상세보기 모달 -->
+    <section>
+      <div
+        class="modal-overlay"
+        id="detailCardModal"
+        style="display: none"
+      ></div>
+    </section>
+    <!-- 카드 상세보기 모달 -->
+  </body>
 </html>
