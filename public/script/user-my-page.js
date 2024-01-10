@@ -309,6 +309,15 @@ function displayInvitedBoard(invite) {
   const invitedContainer = document.getElementById('view-invited-board');
   invitedContainer.innerHTML = ''; // 기존 보드 데이터 제거
 
+  if (invite.length === 0) {
+    const invitedElement = document.createElement('div');
+    invitedElement.innerHTML = `
+    <div class="board-tile m-2 w-64 h-auto" style="border: 1px solid">
+      <span class="mb-3">현재 초대받은 보드가 없습니다.</span>
+    </div>
+    `;
+    invitedContainer.appendChild(invitedElement);
+  }
   invite.forEach((invite) => {
     console.log(invite);
     const invitedElement = document.createElement('div');
