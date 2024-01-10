@@ -106,6 +106,9 @@ export class CardsService {
       throw new BadRequestException('이미 추가했습니다.');
     }
 
+    if (selectedWorker.selectedWorker === '선택해주세요')
+      throw new BadRequestException('추가할 인원을 선택해주십시오.');
+
     await this.cardUserRepository.save({
       card: { id: cardId },
       user: { id: selectedWorker.selectedWorker },
