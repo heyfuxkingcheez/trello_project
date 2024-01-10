@@ -214,7 +214,7 @@ function deleteCard(cardId, columnId) {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
     .then(() => {
-      alert('컬럼 삭제 완료');
+      alert('카드 삭제 완료');
       window.location.reload();
     })
     .catch((error) => {
