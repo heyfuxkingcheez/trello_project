@@ -24,7 +24,28 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+<img src="./public/image/logo.png" height="300"/>
+
+### 칸반 보드
+
+- **팀이 업무와 각 팀원이 할 수 있는 작업량 간에 밸런스를 맞추는 도구**입니다
+  - 칸반 보드는 프로젝트의 업무량과 워크플로우를 더 효과적으로 시각화해 프로젝트를 관리합니다.
+  - 보드에서 업무는 열로 구성된 프로젝트 보드에 표시되며, 각 열은 업무 단계를 나타냅니다.
+
+## Members
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://github.com/heyfuxkingcheez"><img src="https://avatars.githubusercontent.com/u/143869354?v=4" width="100px;" alt=""/><br /><sub><b> 팀장 : 정기욱 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/asdfg20564"><img src="https://avatars.githubusercontent.com/u/44521546?v=4" width="100px;" alt=""/><br /><sub><b> 팀원 : 권유진 </b></sub></a><br /></td>
+       <td align="center"><a href="https://github.com/PachyuChepe"><img src="https://avatars.githubusercontent.com/u/145348244?v=4" width="100px;" alt=""/><br /><sub><b> 팀원 : 배윤호 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Han9526"><img src="https://avatars.githubusercontent.com/Han9526" width="100px;" alt=""/><br /><sub><b> 팀원 : 한승준 </b></sub></a><br /></td>
+    </tr>
+  </tbody>
+</table>
+
+## Skills
 
 ## Installation
 
