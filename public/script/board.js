@@ -118,14 +118,17 @@ function fetchColums(boardId) {
           })
           .catch((error) => {
             alert(error.response.data.message);
+            hideLoading();
+            window.location.href = '/user-login.html';
           });
       });
       addEventListenerColumnList();
-
       hideLoading();
     })
     .catch((error) => {
       alert(error.response.data.message);
+      hideLoading();
+      window.location.href = '/user-login.html';
     });
 }
 // columnList에 클릭 이벤트 할당
