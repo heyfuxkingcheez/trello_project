@@ -92,7 +92,7 @@ Authorization: Bearer {{AccessToken}}
 
 ###
 # 보드에 초대된 사람 조회
-GET {{domain}}/board/1/worker
+GET {{domain}}/board/14/worker
 Authorization: Bearer {{AccessToken}}
 
 ### 

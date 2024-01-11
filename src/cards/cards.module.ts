@@ -8,6 +8,7 @@ import { CardColumn } from 'src/columns/entities/column.entity';
 import { BoardInvitation } from 'src/board-invitations/entities/board-invitation.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { CardUser } from './entities/card_user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CardUser } from './entities/card_user.entity';
       Board,
       BoardInvitation,
       CardUser,
+      User,
     ]),
     ColumnsModule,
   ],

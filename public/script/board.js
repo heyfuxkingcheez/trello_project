@@ -85,6 +85,7 @@ function fetchColums(boardId) {
             cardList.innerHTML = '';
 
             cardResponse.data.cards.forEach((card) => {
+              console.log('오류다', card);
               const formattedDueDate = card.dueDate.slice(0, 19);
               let cardHtml = `
                 <div class="card" draggable="true" data-card-id="${card.id}"  style="border: 4px solid ${card.color}">

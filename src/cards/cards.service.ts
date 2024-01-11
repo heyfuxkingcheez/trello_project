@@ -13,6 +13,8 @@ import { ColumnsService } from 'src/columns/columns.service';
 import { CardUser } from './entities/card_user.entity';
 import { filter } from 'lodash';
 import { Status } from './types/status.type';
+import { Board } from 'src/boards/entities/board.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class CardsService {
@@ -23,7 +25,11 @@ export class CardsService {
     private boardInvitationRepository: Repository<BoardInvitation>,
     @InjectRepository(CardUser)
     private cardUserRepository: Repository<CardUser>,
-    private readonly columnsService: ColumnsService,
+    @InjectRepository(Board)
+    private boardRepository: Repository<Board>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
     private dataSource: DataSource,
   ) {}
   // 카드 존재 확인
@@ -68,10 +74,21 @@ export class CardsService {
       },
       relations: ['user'],
     });
-    let wokers: any = getCardUsers.map((user) => user.user);
-    console.log('초대자들: ', wokers);
 
-    return wokers;
+    const getOwner = await this.boardRepository.findOne({
+      where: { id: boardId },
+      select: ['creator_id'],
+    });
+
+    const owner = await this.userRepository.findOne({
+      where: { id: getOwner.creator_id },
+    });
+    console.log('ㅇㅇ?', owner.username);
+    let workers: any = getCardUsers.map((user) => user.user);
+    console.log('초대자들: ', workers);
+
+    workers.push(owner);
+    return workers;
   }
 
   // 할당된 작업자 조회
@@ -159,8 +176,13 @@ export class CardsService {
     const cardsList = await this.cardsRepository.find({
       where: { column: { id: columnId } },
     });
-    let cardOrderIndex = 1;
 
+    const { name, dueDate, description } = cardDto;
+    if (!name || !dueDate || !description) {
+      throw new BadRequestException('모든 값을 입력해주세요.');
+    }
+
+    let cardOrderIndex = 1;
     if (cardsList && cardsList.length > 0) {
       const getOrderIndex = cardsList.map((card) => card.cardOrder);
       cardOrderIndex = Math.max(...getOrderIndex) + 1;
