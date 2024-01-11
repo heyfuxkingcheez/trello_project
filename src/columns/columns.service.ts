@@ -63,7 +63,7 @@ export class ColumnsService {
       name: cardColumnDto.name,
     });
     existingColumn.name = cardColumnDto.name;
-    return await this.columnsRepository.save(existingColumn);
+    return existingColumn;
   }
 
   // 컬럼 삭제
