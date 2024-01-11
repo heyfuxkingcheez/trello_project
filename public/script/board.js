@@ -606,6 +606,10 @@ function editColumn(columnId) {
   const closeBtn = document.getElementById('editColumnModalCloseBtn');
   editBtn.addEventListener('click', function (event) {
     event.preventDefault();
+    if (document.getElementById('editColumnName').value === '') {
+      alert('컬럼명을 입력해 주세요');
+      return;
+    }
     const accessToken = localStorage.getItem('access_token');
     axios
       .patch(
@@ -676,6 +680,10 @@ document
     const urlParams = new URLSearchParams(window.location.search);
     const boardId = urlParams.get('boardId');
     const columnName = document.getElementById('addColumnName').value;
+    if (!columnName.trim()) {
+      alert('컬럼명을 입력해 주세요');
+      return;
+    }
     axios
       .post(
         `/board/${boardId}/column`,

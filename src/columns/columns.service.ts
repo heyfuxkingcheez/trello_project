@@ -59,7 +59,7 @@ export class ColumnsService {
     if (existingColumn.name === cardColumnDto.name) {
       throw new ConflictException('이전과 같은 컬럼명입니다');
     }
-    const updateColumn = await this.columnsRepository.update(columnId, {
+    await this.columnsRepository.update(columnId, {
       name: cardColumnDto.name,
     });
     existingColumn.name = cardColumnDto.name;
@@ -195,7 +195,6 @@ export class ColumnsService {
   async getColumnById(columnId: number) {
     const existingColumn = await this.columnsRepository.findOne({
       where: { id: columnId },
-      relations: ['board'],
     });
     if (!existingColumn) {
       throw new NotFoundException('컬럼을 찾을 수 없습니다.');
