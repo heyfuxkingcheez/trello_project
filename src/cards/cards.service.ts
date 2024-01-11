@@ -201,7 +201,7 @@ export class CardsService {
         where: { id: newOrder.cardId },
       });
 
-      if (oldOrderAndOldColumnId[0].id !== newOrder.cardId) {
+      if (oldOrderAndOldColumnId[0].id !== parseInt(newOrder.cardId, 10)) {
         throw new NotFoundException('카드를 찾을 수 없습니다.');
       }
 
