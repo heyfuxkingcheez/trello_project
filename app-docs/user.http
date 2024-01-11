@@ -7,9 +7,9 @@ POST {{domain}}/user
 Content-Type: application/json
 
 {
-  "email": "user@gmail.com",
+  "email": "user1@gmail.com",
   "password": "123qweQWE!",
-  "username": "일반좁밥"
+  "username": "일반좁밥11"
 }
 
 ###
@@ -19,7 +19,7 @@ POST {{domain}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@gmail.com",
+  "email": "user1@gmail.com",
   "password": "123qweQWE!"
 }
 
