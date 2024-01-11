@@ -247,6 +247,9 @@ function detailCard(cardId) {
     </div>
     <div id="card-worker${data.card.id}" class="mb-4">
     <label class="block text-gray-700 text-sm font-bold mb-2">작업자</label>
+    <select id="worker-select${data.card.id}" onchange="selectWorkerFunc(this, ${cardId}, ${boardId})" class="border border-gray-300 rounded-md" name="worker-list">
+    <option>선택해주세요</option>
+    </select>
     <div id="worker${data.card.id}">
     </div>
     </.div>
@@ -280,6 +283,7 @@ function detailCard(cardId) {
       hideLoading();
       cardDetail.innerHTML += cardDetailHtml;
 
+      // 작업자 get
       axios
         .get(`board/${boardId}/card/${cardId}/worker`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -292,7 +296,9 @@ function detailCard(cardId) {
 
           workers.forEach((worker) => {
             let cardDetailHtml = `
-            <span id="detailCardWorker${worker.id}" class="shadow border rounded py-2 px-3 w-full">${worker.username}</span>`;
+            <span id="detailCardWorker${worker.id}" class="shadow border rounded py-2 px-3 w-full">${worker.username}</span>
+            <button id="WorkerDeleteBtn${worker.id}" data-card-worker-id="${cardId}">x</button>
+            `;
 
             cardDetailWorker.innerHTML += cardDetailHtml;
           });
@@ -302,6 +308,30 @@ function detailCard(cardId) {
           console.error('Error:', error);
         });
 
+      // 보드 사용자 list get
+      axios
+        .get(`/board/${boardId}/worker`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((response) => {
+          const worker = response.data.existedWokerAtBoard;
+          const cardDetailWorkerSelect = document.getElementById(
+            `worker-select${cardId}`,
+          );
+          // cardDetailWorkerSelect.innerHTML = '';
+          worker.forEach((worker) => {
+            let selectWorkerHTML = `
+            <option id="option${cardId}" value="${worker.id}">${worker.username}</option>
+            `;
+            cardDetailWorkerSelect.innerHTML += selectWorkerHTML;
+          });
+        })
+        .catch((error) => {
+          alert(error.response.data.message);
+          console.error('Error:', error);
+        });
+
+      // 댓글 get
       axios
         .get(`/board/${boardId}/card/${cardId}/comment`, {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -312,8 +342,16 @@ function detailCard(cardId) {
           cardDetailComment.innerHTML = '';
           data.forEach((comment) => {
             console.log(comment);
+
             let commentHtml = `
-            <span>${comment.user.username}</span>  <span>${comment.createdAt}</span>
+            <span>${
+              comment.user.username
+            }</span>  <span>${comment.createdAt.slice(
+              0,
+              10,
+            )}</span> <button class="deleteColumnButton bg-whi te hover:bg-gray-100 text-gray-800 font-semibold py-1 px-2 border border-gray-400 rounded shadow" data-comment-card-id="${cardId}" id="comment${
+              comment.id
+            }">삭제</button>
             <p>${comment.text}</p>
             `;
             cardDetailComment.innerHTML += commentHtml;
@@ -328,7 +366,10 @@ function detailCard(cardId) {
       alert(error.response.data.message);
       console.error('Error:', error);
     });
+  addEventListenerCardDetailBtn();
+  // 위에 html 삽입 되고 나서 동작하게 비동기 처리...
   setTimeout(() => {
+    // 모달 닫기
     const cardDetailModalCloseBtn = document.getElementById(
       `cardDetailModalCloseBtn${cardId}`,
     );
@@ -336,6 +377,8 @@ function detailCard(cardId) {
       event.preventDefault();
       document.getElementById(`detailCardModal`).style.display = 'none';
     });
+
+    // 모달 수정
     const cardDetailModalEditBtn = document.getElementById(
       `cardDetailEditBtn${cardId}`,
     );
@@ -353,6 +396,8 @@ function detailCard(cardId) {
 
       editCard(boardId, cardId, title, color, description, dueDate);
     });
+
+    // 댓글 등록
     const cardDetailCommentBtn = document.getElementById(
       `cardDetailCommentBtn${cardId}`,
     );
@@ -363,6 +408,47 @@ function detailCard(cardId) {
       commentCard(boardId, cardId, text);
     });
   }, 100);
+}
+
+// 카드 상세 클릭 이벤트
+function addEventListenerCardDetailBtn() {
+  const cardDetailList = document.getElementById('detailCardModal');
+
+  cardDetailList.addEventListener('click', (event) => {
+    event.preventDefault();
+    const targetId = event.target.id;
+    if (targetId.indexOf('WorkerDeleteBtn') !== -1) {
+      const workerId = targetId.replace('WorkerDeleteBtn', '');
+      const cardId = event.target.dataset.cardWorkerId;
+      console.log(workerId, cardId);
+      deleteWorker(+workerId, +cardId);
+    } else if (targetId.indexOf('comment') !== -1) {
+      const commentId = targetId.replace('comment', '');
+      const cardId = event.target.dataset.commentCardId;
+      console.log(commentId, cardId);
+      comentDelete(+commentId, +cardId);
+    }
+  });
+}
+
+// 작업자 삭제
+function deleteWorker(workerId, cardId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+  console.log(accessToken);
+  axios
+    .delete(`/board/${boardId}/card/${cardId}/worker/${workerId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    .then((response) => {
+      alert(response.data.message);
+      window.location.reload();
+    })
+    .catch((error) => {
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
 }
 
 // 카드 수정
@@ -389,6 +475,7 @@ function editCard(boardId, cardId, title, color, description, dueDate) {
       window.location.reload();
     })
     .catch((error) => {
+      hideLoading();
       alert(error.response.data.message);
       console.error('Error:', error);
     });
@@ -420,7 +507,7 @@ function deleteCard(cardId, columnId) {
 // 카드 댓글 등록
 function commentCard(boardId, cardId, text) {
   const accessToken = localStorage.getItem('access_token');
-
+  showLoading();
   axios
     .post(
       `/board/${boardId}/card/${cardId}/comment`,
@@ -437,6 +524,29 @@ function commentCard(boardId, cardId, text) {
       window.location.reload();
     })
     .catch((error) => {
+      hideLoading();
+      alert(error.response.data.message);
+      console.error('Error:', error);
+    });
+}
+
+// 댓글 삭제
+function comentDelete(commentId, cardId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardId = urlParams.get('boardId');
+  const accessToken = localStorage.getItem('access_token');
+  showLoading();
+  axios
+    .delete(`/board/${boardId}/card/${cardId}/comment/${commentId}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    .then((response) => {
+      hideLoading();
+      alert(response.data.message);
+      window.location.reload();
+    })
+    .catch((error) => {
+      hideLoading();
       alert(error.response.data.message);
       console.error('Error:', error);
     });
@@ -585,108 +695,3 @@ document
         document.getElementById('addColumnName').value = '';
       });
   });
-
-//====
-// 드래그 앤 드롭 설정
-function setupDragAndDrop() {
-  const cards = document.querySelectorAll('.card');
-  const columns = document.querySelectorAll('.column');
-
-  // 카드에 대한 이벤트 리스너 설정
-  cards.forEach((card) => {
-    card.setAttribute('draggable', true);
-    card.addEventListener('dragstart', handleDragStart);
-    card.addEventListener('dragend', handleDragEnd);
-  });
-
-  // 컬럼에 대한 이벤트 리스너 설정
-  columns.forEach((column) => {
-    column.addEventListener('dragover', handleDragOver);
-    column.addEventListener('drop', handleDrop);
-  });
-  console.log('너 동작은 하니?');
-}
-
-// 드래그 시작 시 호출
-function handleDragStart(event) {
-  draggedCard = event.target;
-  originColumn = draggedCard.closest('.column');
-  console.log('Drag Start:', draggedCard);
-}
-
-// 드래그 종료 시 호출
-function handleDragEnd() {
-  console.log('Drag End');
-  draggedCard = null;
-  originColumn = null;
-}
-
-// 드래그 오버 시 호출
-function handleDragOver(event) {
-  event.preventDefault();
-  console.log('Drag Over');
-}
-// 드롭 시 호출
-function handleDrop(event) {
-  event.preventDefault();
-  const targetColumn = event.target.closest('.column');
-  const targetCardList = targetColumn.querySelector('.cardList');
-
-  if (targetCardList && draggedCard) {
-    const cards = Array.from(targetCardList.children);
-    const droppedIndex = cards.indexOf(event.target.closest('.card'));
-
-    targetCardList.insertBefore(draggedCard, cards[droppedIndex]);
-
-    updateCardPosition(draggedCard, originColumn, targetColumn, droppedIndex);
-    console.log('Drop:', draggedCard);
-  }
-}
-
-function updateCardPosition(card, originColumn, newColumn, newIndex) {
-  const cardId = card.getAttribute('data-card-id');
-  const originColumnId = originColumn.getAttribute('data-column-id');
-  const newColumnId = newColumn.getAttribute('data-column-id');
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const boardId = urlParams.get('boardId');
-  const accessToken = localStorage.getItem('access_token');
-
-  if (newColumnId !== originColumnId) {
-    // 다른 컬럼으로 이동
-    axios
-      .patch(
-        `/board/${boardId}/column/${originColumnId}/cardMove/${cardId}`,
-        { destinationColumnId: newColumnId },
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      )
-      .then(() => console.log('Card moved successfully'))
-      .catch((error) => console.error('Error moving card', error));
-  } else {
-    // 같은 컬럼 내에서 위치 변경
-    const newOrder = newIndex; // 서버에 보낼 새 순서는 드롭된 인덱스 + 1
-
-    console.log(
-      boardId,
-      'boardId',
-      newColumnId,
-      'columnId',
-      cardId,
-      'cardId',
-      newOrder,
-      'newOrder',
-    );
-    axios
-      .patch(
-        `/board/${boardId}/column/${newColumnId}/cardOrder`,
-        { cardId: cardId, newOrder: newOrder },
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      )
-      .then(() => console.log('Card order updated successfully'))
-      .catch((error) => console.error('Error updating card order', error));
-  }
-}
