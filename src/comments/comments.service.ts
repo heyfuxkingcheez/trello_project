@@ -50,7 +50,7 @@ export class CommentsService {
       where: { card: { id: cardId } },
       relations: ['user'],
     });
-    console.log('댓글들', getComments);
+    // console.log('댓글들', getComments);
     return getComments;
   }
 

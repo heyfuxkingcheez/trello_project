@@ -20,7 +20,7 @@ function handleLogin(event) {
     .then((response) => {
       const { access_token } = response.data;
       localStorage.setItem('access_token', access_token);
-      console.log(response.data);
+      // console.log(response.data);
       alert(response.data.message);
       window.location.href = '/user-my-page.html';
     })

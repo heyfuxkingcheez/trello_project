@@ -43,7 +43,7 @@ function displayUserProfile(data) {
 
 // 이미지 미리보기 함수
 window.previewImage = function (event) {
-  console.log('previewImage', event);
+  // console.log('previewImage', event);
   const reader = new FileReader();
   reader.onload = function () {
     const output = document.getElementById('imagePreview');

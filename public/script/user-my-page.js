@@ -85,7 +85,7 @@ document
       .then((response) => {
         alert('신규 보드 생성 완료');
         window.location.reload();
-        console.log(response);
+        // console.log(response);
       })
       .catch((error) => {
         alert(error.response.data.message);
@@ -113,12 +113,12 @@ function fetchBoards() {
 
 // 보드 데이터를 화면에 표시하는 함수
 function displayBoards(boards) {
-  console.log(boards);
+  // console.log(boards);
   const boardsContainer = document.querySelector('.flex.flex-wrap.-mx-2');
   boardsContainer.innerHTML = ''; // 기존 보드 데이터 제거
 
   boards.forEach((board) => {
-    console.log(board);
+    // console.log(board);
     const boardElement = document.createElement('div');
     boardElement.className = 'boardGet';
     boardElement.innerHTML = `
@@ -312,7 +312,7 @@ document
   });
 
 function displayInvitedBoard(invite) {
-  console.log(invite);
+  // console.log(invite);
   const invitedContainer = document.getElementById('view-invited-board');
   invitedContainer.innerHTML = ''; // 기존 보드 데이터 제거
 
@@ -326,7 +326,7 @@ function displayInvitedBoard(invite) {
     invitedContainer.appendChild(invitedElement);
   }
   invite.forEach((invite) => {
-    console.log(invite);
+    // console.log(invite);
     const invitedElement = document.createElement('div');
     invitedElement.className = 'invitedGet';
     invitedElement.innerHTML = `
@@ -376,7 +376,7 @@ function accepteInvite(invitedId) {
     .catch((error) => {
       alert(`실패하였습니다..  ${error}`);
       window.location.href = '/user-my-page.html';
-      console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
+      // console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
       hideLoading();
       // 오류 처리
     });

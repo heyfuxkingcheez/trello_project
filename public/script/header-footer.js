@@ -158,7 +158,7 @@ function addTokenCountdownClickListener() {
 function refreshAccessToken() {
   const accessToken = localStorage.getItem('access_token');
   if (!accessToken) {
-    console.log('액세스 토큰이 존재하지 않습니다.');
+    // console.log('액세스 토큰이 존재하지 않습니다.');
     return;
   }
 
@@ -176,7 +176,7 @@ function refreshAccessToken() {
       window.location.reload();
     })
     .catch((error) => {
-      console.error(error.response.data.message);
+      // console.error(error.response.data.message);
     });
 }
 
@@ -202,7 +202,7 @@ function fetchUserProfileImage() {
       }
     })
     .catch((error) => {
-      console.error('프로필 이미지를 불러오는데 실패했습니다:', error);
+      // console.error('프로필 이미지를 불러오는데 실패했습니다:', error);
       // 오류 처리 및 기본 이미지 설정
       // document.querySelector('.profile-img').src = './image/Profil.png';
     });

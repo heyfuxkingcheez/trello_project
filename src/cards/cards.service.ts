@@ -83,9 +83,9 @@ export class CardsService {
     const owner = await this.userRepository.findOne({
       where: { id: getOwner.creator_id },
     });
-    console.log('ㅇㅇ?', owner.username);
+    // console.log('ㅇㅇ?', owner.username);
     let workers: any = getCardUsers.map((user) => user.user);
-    console.log('초대자들: ', workers);
+    // console.log('초대자들: ', workers);
 
     workers.push(owner);
     return workers;
@@ -99,7 +99,7 @@ export class CardsService {
     });
 
     let workers: any = getCardWorker.map((worker) => worker.user);
-    console.log('작업자들', workers);
+    // console.log('작업자들', workers);
     return workers;
   }
 
@@ -110,7 +110,7 @@ export class CardsService {
     boardId: number,
     selectedWorker: any,
   ) {
-    console.log(cardId, userId, boardId);
+    // console.log(cardId, userId, boardId);
     await this.existedCard(cardId);
 
     const existWorker = await this.cardUserRepository.findOne({
@@ -208,9 +208,9 @@ export class CardsService {
 
   // 카드 순서, 다른 컬럼으로 이동
   async updateCardOrder(userId: any, columnId: number, newOrder: any) {
-    console.log('newOrder: ', newOrder);
-    console.log('columnId: ', columnId);
-    console.log('userId: ', userId.id);
+    // console.log('newOrder: ', newOrder);
+    // console.log('columnId: ', columnId);
+    // console.log('userId: ', userId.id);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -229,7 +229,7 @@ export class CardsService {
 
       const allCards = await this.cardsRepository.find({});
       const cardOrderValues = allCards.map((card) => card.cardOrder);
-      console.log('cardOrderValues: ', cardOrderValues);
+      // console.log('cardOrderValues: ', cardOrderValues);
 
       if (!cardOrderValues.includes(newOrderValue))
         throw new NotFoundException('실패!');
@@ -251,7 +251,7 @@ export class CardsService {
           max: max,
         })
         .getMany();
-      console.log('currentCards: ', currentCards);
+      // console.log('currentCards: ', currentCards);
 
       const direction =
         newOrderValue > oldOrderAndOldColumnId[0].cardOrder ? -1 : 1;
@@ -267,7 +267,7 @@ export class CardsService {
       await queryRunner.commitTransaction();
       return oldOrderAndOldColumnId[0];
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       await queryRunner.rollbackTransaction();
       return { status: 500, message: '카드순서 변경 실패' };
     } finally {
@@ -315,7 +315,7 @@ export class CardsService {
       await queryRunner.commitTransaction();
       return updatedCard;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       await queryRunner.rollbackTransaction();
       return { message: '실패!' };
     } finally {
