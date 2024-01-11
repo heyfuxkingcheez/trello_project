@@ -48,13 +48,10 @@ export class CardsController {
     return { status: HttpStatus.CREATED, message: '카드 등록 성공', card };
   }
 
-  // 작업자 조회
+  // 초대된 사람들 모음
   @Get('/worker')
-  async getWorker(@Req() req, @Param('boardId') boardId: string) {
-    const existedWokerAtBoard = await this.cardsService.getWorker(
-      req.user.id,
-      +boardId,
-    );
+  async getWorker(@Param('boardId') boardId: string) {
+    const existedWokerAtBoard = await this.cardsService.getWorker(+boardId);
     return {
       status: HttpStatus.OK,
       message: '작업자 조회 성공',
@@ -87,16 +84,16 @@ export class CardsController {
     return { status: HttpStatus.OK, message: '작업자 할당 성공', worker };
   }
   // 작업자 삭제
-  @Delete('/card/:cardId/worker')
+  @Delete('/card/:cardId/worker/:workerId')
   async deleteWorker(
     @Param('cardId') cardId: string,
-    @Body() selectedWorker: Array<object>,
+    @Param('workerId') workerId: string,
     @Param('boardId') boardId: string,
     @Req() req,
   ) {
     await this.cardsService.deleteWorker(
       +cardId,
-      selectedWorker,
+      +workerId,
       +boardId,
       req.user.id,
     );
