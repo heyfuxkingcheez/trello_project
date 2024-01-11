@@ -419,14 +419,15 @@ function addEventListenerCardDetailBtn() {
   const cardDetailList = document.getElementById('detailCardModal');
 
   cardDetailList.addEventListener('click', (event) => {
-    event.preventDefault();
     const targetId = event.target.id;
     if (targetId.indexOf('WorkerDeleteBtn') !== -1) {
+      event.preventDefault();
       const workerId = targetId.replace('WorkerDeleteBtn', '');
       const cardId = event.target.dataset.cardWorkerId;
       console.log(workerId, cardId);
       deleteWorker(+workerId, +cardId);
     } else if (targetId.indexOf('comment') !== -1) {
+      event.preventDefault();
       const commentId = targetId.replace('comment', '');
       const cardId = event.target.dataset.commentCardId;
       console.log(commentId, cardId);
