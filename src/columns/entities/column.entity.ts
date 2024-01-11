@@ -16,7 +16,7 @@ export class CardColumn {
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
-  @Column({ length: 255 })
+  @Column({ length: 255, nullable: true })
   name: string;
 
   @Column({ name: 'order_index', nullable: true })
