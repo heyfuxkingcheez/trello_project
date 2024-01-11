@@ -25,7 +25,7 @@ function handleLogin(event) {
       window.location.href = '/user-my-page.html';
     })
     .catch((error) => {
-      console.error(error);
+      // console.error(error);
       alert(error.response.data.message);
     });
 }

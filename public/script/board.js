@@ -85,7 +85,7 @@ function fetchColums(boardId) {
             cardList.innerHTML = '';
 
             cardResponse.data.cards.forEach((card) => {
-              console.log('오류다', card);
+              // console.log('오류다', card);
               const formattedDueDate = card.dueDate.slice(0, 19);
               let cardHtml = `
                 <div class="card" draggable="true" data-card-id="${card.id}"  style="border: 4px solid ${card.color}">
@@ -155,9 +155,9 @@ function addEventListenerColumnList() {
       deleteCard(cardId, columnId);
     } else if (targetId.indexOf('cardDetailId') != -1) {
       const cardId = targetId.replace('cardDetailId', '');
-      const columnId = event.target.dataset.cardDetailColumnId;
-      const cardColor = event.target.dataset.cardDetailColor;
-      console.log(cardId, columnId, cardColor);
+      // const columnId = event.target.dataset.cardDetailColumnId;
+      // const cardColor = event.target.dataset.cardDetailColor;
+      // console.log(cardId, columnId, cardColor);
       document.getElementById('detailCardModal').style.display = 'flex';
       detailCard(cardId);
     } else if (targetId.indexOf('leftColumnId') != -1) {
@@ -188,7 +188,7 @@ function leftColumn(columnId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 function rightColumn(columnId) {
@@ -209,7 +209,7 @@ function rightColumn(columnId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
@@ -226,10 +226,10 @@ function detailCard(cardId) {
     })
     .then((response) => {
       const data = response.data;
-      console.log(data.card);
+      // console.log(data.card);
       const cardDetail = document.getElementById(`detailCardModal`);
       const formattedDueDate = data.card.dueDate.slice(0, 19);
-      console.log(formattedDueDate);
+      // console.log(formattedDueDate);
 
       cardDetail.innerHTML = '';
 
@@ -294,7 +294,7 @@ function detailCard(cardId) {
         })
         .then((response) => {
           const workers = response.data.worker;
-          console.log(workers);
+          // console.log(workers);
           const cardDetailWorker = document.getElementById(`worker${cardId}`);
           cardDetailWorker.innerHTML = '';
 
@@ -309,7 +309,7 @@ function detailCard(cardId) {
         })
         .catch((error) => {
           alert(error.response.data.message);
-          console.error('Error:', error);
+          // console.error('Error:', error);
         });
 
       // 보드 사용자 list get
@@ -332,7 +332,7 @@ function detailCard(cardId) {
         })
         .catch((error) => {
           alert(error.response.data.message);
-          console.error('Error:', error);
+          // console.error('Error:', error);
         });
 
       // 댓글 get
@@ -345,7 +345,7 @@ function detailCard(cardId) {
           const cardDetailComment = document.getElementById(`comment${cardId}`);
           cardDetailComment.innerHTML = '';
           data.forEach((comment) => {
-            console.log(comment);
+            // console.log(comment);
 
             let commentHtml = `
             <span>${
@@ -363,12 +363,12 @@ function detailCard(cardId) {
         })
         .catch((error) => {
           alert(error.response.data.message);
-          console.error('Error:', error);
+          // console.error('Error:', error);
         });
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
   addEventListenerCardDetailBtn();
   // 위에 html 삽입 되고 나서 동작하게 비동기 처리...
@@ -388,7 +388,7 @@ function detailCard(cardId) {
     );
     cardDetailModalEditBtn.addEventListener('click', (event) => {
       event.preventDefault();
-      console.log(`수정 클릭 ==> ${cardId}`);
+      // console.log(`수정 클릭 ==> ${cardId}`);
       const color = document.getElementById(`detailCardColor${cardId}`).value;
       const description = document.getElementById(
         `detailCardDescription${cardId}`,
@@ -407,7 +407,7 @@ function detailCard(cardId) {
     );
     cardDetailCommentBtn.addEventListener('click', (event) => {
       event.preventDefault();
-      console.log('댓글 등록 버튼!', cardId);
+      // console.log('댓글 등록 버튼!', cardId);
       const text = document.getElementById(`detailCardComment${cardId}`).value;
       commentCard(boardId, cardId, text);
     });
@@ -424,13 +424,13 @@ function addEventListenerCardDetailBtn() {
       event.preventDefault();
       const workerId = targetId.replace('WorkerDeleteBtn', '');
       const cardId = event.target.dataset.cardWorkerId;
-      console.log(workerId, cardId);
+      // console.log(workerId, cardId);
       deleteWorker(+workerId, +cardId);
     } else if (targetId.indexOf('comment') !== -1) {
       event.preventDefault();
       const commentId = targetId.replace('comment', '');
       const cardId = event.target.dataset.commentCardId;
-      console.log(commentId, cardId);
+      // console.log(commentId, cardId);
       comentDelete(+commentId, +cardId);
     }
   });
@@ -441,7 +441,7 @@ function deleteWorker(workerId, cardId) {
   const urlParams = new URLSearchParams(window.location.search);
   const boardId = urlParams.get('boardId');
   const accessToken = localStorage.getItem('access_token');
-  console.log(accessToken);
+  // console.log(accessToken);
   axios
     .delete(`/board/${boardId}/card/${cardId}/worker/${workerId}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -452,14 +452,14 @@ function deleteWorker(workerId, cardId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
 // 카드 수정
 function editCard(boardId, cardId, title, color, description, dueDate) {
   showLoading();
-  console.log('잘 들어옴', color);
+  // console.log('잘 들어옴', color);
   const accessToken = localStorage.getItem('access_token');
   axios
     .patch(
@@ -482,13 +482,13 @@ function editCard(boardId, cardId, title, color, description, dueDate) {
     .catch((error) => {
       hideLoading();
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
 // 카드 삭제
 function deleteCard(cardId, columnId) {
-  console.log(cardId, columnId);
+  // console.log(cardId, columnId);
   if (!confirm('이 카드을 삭제하시겠습니까?')) {
     return;
   }
@@ -505,7 +505,7 @@ function deleteCard(cardId, columnId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
@@ -553,7 +553,7 @@ function comentDelete(commentId, cardId) {
     .catch((error) => {
       hideLoading();
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
@@ -589,7 +589,7 @@ function addCard(columnId) {
       })
       .catch((error) => {
         alert(error.response.data.message);
-        console.error('Error:', error);
+        // console.error('Error:', error);
       });
   });
   addCardModalCloseBtn.addEventListener('click', function (event) {
@@ -626,7 +626,7 @@ function editColumn(columnId) {
       })
       .catch((error) => {
         alert(error.response.data.message);
-        console.error('Error:', error);
+        // console.error('Error:', error);
       });
   });
   closeBtn.addEventListener('click', function (event) {
@@ -653,7 +653,7 @@ function deleteColumn(columnId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 // 컬럼 add 모달창열기
@@ -696,11 +696,11 @@ document
         },
       )
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         window.location.reload();
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         alert(error.response.data.message);
       })
       .finally(() => {
@@ -726,19 +726,19 @@ function setupDragAndDrop() {
     column.addEventListener('dragover', handleDragOver);
     column.addEventListener('drop', handleDrop);
   });
-  console.log('너 동작은 하니?');
+  // console.log('너 동작은 하니?');
 }
 
 // 드래그 시작 시 호출
 function handleDragStart(event) {
   draggedCard = event.target;
   originColumn = draggedCard.closest('.column');
-  console.log('Drag Start:', draggedCard);
+  // console.log('Drag Start:', draggedCard);
 }
 
 // 드래그 종료 시 호출
 function handleDragEnd() {
-  console.log('Drag End');
+  // console.log('Drag End');
   draggedCard = null;
   originColumn = null;
 }
@@ -746,7 +746,7 @@ function handleDragEnd() {
 // 드래그 오버 시 호출
 function handleDragOver(event) {
   event.preventDefault();
-  console.log('Drag Over');
+  // console.log('Drag Over');
 }
 // 드롭 시 호출
 function handleDrop(event) {
@@ -761,7 +761,7 @@ function handleDrop(event) {
     targetCardList.insertBefore(draggedCard, cards[droppedIndex]);
 
     updateCardPosition(draggedCard, originColumn, targetColumn, droppedIndex);
-    console.log('Drop:', draggedCard);
+    // console.log('Drop:', draggedCard);
   }
 }
 
@@ -790,16 +790,16 @@ function updateCardPosition(card, originColumn, newColumn, newIndex) {
     // 같은 컬럼 내에서 위치 변경
     const newOrder = newIndex; // 서버에 보낼 새 순서는 드롭된 인덱스 + 1
 
-    console.log(
-      boardId,
-      'boardId',
-      newColumnId,
-      'columnId',
-      cardId,
-      'cardId',
-      newOrder,
-      'newOrder',
-    );
+    // console.log(
+    //   boardId,
+    //   'boardId',
+    //   newColumnId,
+    //   'columnId',
+    //   cardId,
+    //   'cardId',
+    //   newOrder,
+    //   'newOrder',
+    // );
     axios
       .patch(
         `/board/${boardId}/column/${newColumnId}/cardOrder`,

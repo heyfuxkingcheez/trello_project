@@ -104,7 +104,7 @@ function parseJwt(token) {
   let base64Payload = token.split('.')[1];
   let payload = atob(base64Payload);
   let parsedPayload = JSON.parse(payload);
-  console.log('Parsed Token Payload:', parsedPayload);
+  // console.log('Parsed Token Payload:', parsedPayload);
   return parsedPayload;
 }
 

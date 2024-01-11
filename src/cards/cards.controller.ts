@@ -74,7 +74,7 @@ export class CardsController {
     @Param('boardId') boardId: string,
     @Body() selectedWoker: Array<object>,
   ) {
-    console.log(selectedWoker);
+    // console.log(selectedWoker);
     const worker = await this.cardsService.selectWorker(
       +cardId,
       req.user.id,

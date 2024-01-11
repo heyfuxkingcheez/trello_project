@@ -17,7 +17,7 @@ document.getElementById('signup-button').addEventListener('click', function () {
       window.location.href = '/user-login.html';
     })
     .catch(function (error) {
-      console.error(error);
+      // console.error(error);
       alert(error.response.data.message);
     });
 });
@@ -35,7 +35,7 @@ document
       })
       .catch(function (error) {
         alert(error.response.data.message);
-        console.error('인증번호 전송 실패', error);
+        // console.error('인증번호 전송 실패', error);
         hideLoading();
       });
   });

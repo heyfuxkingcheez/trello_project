@@ -42,7 +42,7 @@ function fetchUserProfile() {
     .catch((error) => {
       alert('로그인이 필요한 서비스 입니다.');
       window.location.href = '/user-login.html';
-      console.error('프로필 정보를 불러오는데 실패했습니다:', error);
+      // console.error('프로필 정보를 불러오는데 실패했습니다:', error);
       hideLoading();
       // 오류 처리
     });
@@ -89,7 +89,7 @@ document
       })
       .catch((error) => {
         alert(error.response.data.message);
-        console.error('Error:', error);
+        // console.error('Error:', error);
       });
 
     // 모달 닫기
@@ -203,7 +203,7 @@ function submitEditForm(event, boardId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
@@ -231,7 +231,7 @@ function deleteBoard(boardId) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
@@ -273,7 +273,7 @@ function submitInvitedForm(event, board_id) {
     })
     .catch((error) => {
       alert(error.response.data.message);
-      console.error('Error:', error);
+      // console.error('Error:', error);
     });
 }
 
@@ -298,7 +298,7 @@ document
       .catch((error) => {
         alert(`실패하였습니다..  ${error}`);
         window.location.href = '/user-my-page.html';
-        console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
+        // console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
         hideLoading();
         // 오류 처리
       });
@@ -400,7 +400,7 @@ function declineInvite(invitedId) {
     .catch((error) => {
       alert(`실패하였습니다..  ${error}`);
       window.location.href = '/user-my-page.html';
-      console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
+      // console.error('초대 확인을 하는 도중 오류가 발생하였습니다:', error);
       hideLoading();
       // 오류 처리
     });
