@@ -63,7 +63,7 @@ export class CardsService {
   async getWorker(boardId: number) {
     const getCardUsers = await this.boardInvitationRepository.find({
       where: {
-        status: 'invited',
+        status: 'accepted',
         board: { id: boardId },
       },
       relations: ['user'],

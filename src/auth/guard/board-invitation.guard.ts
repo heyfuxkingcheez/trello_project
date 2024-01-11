@@ -34,7 +34,7 @@ export class BoardInvitationGuard implements CanActivate {
     const existedUser = await this.boardInvitationRepository.findOne({
       where: {
         user: { id: userId },
-        status: 'invited',
+        status: 'accepted',
         board: { id: boardId },
       },
     });
